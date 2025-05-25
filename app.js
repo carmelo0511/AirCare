@@ -1,4 +1,4 @@
-const apiKey = 'e8cba22ebb4d317ef3292bc271794e99';
+const apiBaseUrl = "https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod";
 
 const fetchBtn = document.getElementById('fetchBtn');
 const geoBtn = document.getElementById('geoBtn');
@@ -21,18 +21,14 @@ const AQI_MAP = [
   { label: "Très mauvaise", color: "text-red-600", emoji: "🚨", advice: "Restez à l'intérieur et suivez votre traitement !" }
 ];
 
-function showLoader(show) {
-  loader.classList.toggle('hidden', !show);
-}
-function showResult(show) {
-  result.classList.toggle('hidden', !show);
-}
+function showLoader(show) { loader.classList.toggle('hidden', !show); }
+function showResult(show) { result.classList.toggle('hidden', !show); }
 function showError(msg = "") {
   errorMsg.textContent = msg;
   errorMsg.classList.toggle('hidden', !msg);
 }
 
-// --- Autocomplete villes (OpenWeather Geo API) ---
+// --- Autocomplete villes (via Lambda/API Gateway proxy sécurisé) ---
 cityInput.addEventListener('input', () => {
   const query = cityInput.value.trim();
   citySuggestions.innerHTML = '';
@@ -42,7 +38,7 @@ cityInput.addEventListener('input', () => {
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(async () => {
     try {
-      const res = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`);
+      const res = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(query)}&limit=5`);
       const data = await res.json();
       if (!data.length) return;
 
@@ -51,7 +47,6 @@ cityInput.addEventListener('input', () => {
       ).join('');
       citySuggestions.classList.remove('hidden');
 
-      // Click event on suggestions
       Array.from(citySuggestions.children).forEach((li, idx) => {
         li.addEventListener('click', () => {
           cityInput.value = li.textContent;
@@ -59,36 +54,40 @@ cityInput.addEventListener('input', () => {
         });
       });
     } catch (err) {
-      // silence autocomplete error
+      showError("Erreur : Load failed");
     }
   }, 200);
 });
 
-// Masquer suggestions quand on clique ailleurs
 document.addEventListener('click', (e) => {
   if (!citySuggestions.contains(e.target) && e.target !== cityInput) {
     citySuggestions.classList.add('hidden');
   }
 });
 
+// --- Reverse geocoding sécurisé (proxy Lambda) ---
+async function getCityNameFromCoords(lat, lon) {
+  try {
+    const res = await fetch(`${apiBaseUrl}/geo/reverse?lat=${lat}&lon=${lon}&limit=1`);
+    const data = await res.json();
+    if (data && data[0]) {
+      return `${data[0].name}, ${data[0].country}`;
+    }
+  } catch (e) {}
+  return `Coordonnées : ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+}
+
+// --- Air quality sécurisé (proxy Lambda) ---
 async function fetchAirByCoords(lat, lon, locationLabel = null) {
   showLoader(true);
   showResult(false);
   showError("");
   try {
-    // Reverse geocode : lat/lon -> nom de ville
     let cityLabel = locationLabel;
     if (!cityLabel) {
-      const reverseRes = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`);
-      const reverseData = await reverseRes.json();
-      if (reverseData && reverseData[0]) {
-        cityLabel = `${reverseData[0].name}, ${reverseData[0].country}`;
-      } else {
-        cityLabel = `Coordonnées : ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
-      }
+      cityLabel = await getCityNameFromCoords(lat, lon);
     }
-
-    const airRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+    const airRes = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
     const airData = await airRes.json();
     if (!airData.list || !airData.list[0]) throw new Error(airData.message || "Donnée indisponible");
     const aqi = airData.list[0].main.aqi;
@@ -114,8 +113,7 @@ async function fetchAirByCity(city) {
   showResult(false);
   showError("");
   try {
-    // OpenWeather attend juste le nom court
-    const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`);
+    const geoRes = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`);
     const geoData = await geoRes.json();
     if (!geoData.length) throw new Error("Ville introuvable.");
     const { lat, lon, name, country } = geoData[0];
@@ -147,6 +145,5 @@ geoBtn.addEventListener('click', () => {
 });
 
 window.onload = () => {
-  // Optionnel : auto-géoloc au chargement
-  // geoBtn.click();
+  // geoBtn.click(); // Active l'auto-géoloc au chargement si tu veux
 };
