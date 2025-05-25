@@ -13,13 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Node si tu utilises un build (optionnel)
+      # (Optionnel) Installe Node si build (pas nécessaire pour HTML/CSS/JS pur)
       # - name: Setup Node.js
       #   uses: actions/setup-node@v4
       #   with:
       #     node-version: 18
 
-      # Build step si besoin (ex: npm run build)
+      # Build step (si besoin, par exemple npm run build)
       # - name: Build
       #   run: npm ci && npm run build
 
@@ -27,7 +27,6 @@ jobs:
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --delete
-
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -40,6 +39,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
           PATHS: "/*"
-
