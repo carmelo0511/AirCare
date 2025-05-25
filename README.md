@@ -1,5 +1,13 @@
 # 🌿 AirCare
 
+[![AWS S3](https://img.shields.io/badge/Deployed-AWS%20S3-orange?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/s3/)
+[![CloudFront](https://img.shields.io/badge/Accelerated%20by-CloudFront-blue?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/cloudfront/)
+[![GitHub Actions](https://github.com/carmelo0511/AirCare/actions/workflows/deploy-s3.yml/badge.svg)](https://github.com/carmelo0511/AirCare/actions)
+[![API Secured](https://img.shields.io/badge/API%20Key-100%25%20hidden%20(serverless%20proxy)-success?logo=amazon-aws&logoColor=white)](#)
+[![Responsive](https://img.shields.io/badge/Responsive-Yes-44cc11?logo=css3&logoColor=white)](#)
+
+---
+
 **AirCare** est une application moderne de suivi de la qualité de l’air en temps réel, pensée pour les asthmatiques et personnes sensibles.  
 - Interface moderne (HTML/CSS/Tailwind, JS)
 - Autocomplétion des villes, géolocalisation, conseils santé
