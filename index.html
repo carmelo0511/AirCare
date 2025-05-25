@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AirCare - Qualité de l'air</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center text-gray-800 font-sans transition-all duration-700">
+  <div class="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl relative">
+    <h1 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
+      <span>🌿</span> AirCare
+    </h1>
+    <div class="mb-4 flex flex-col gap-2 relative">
+      <label for="cityInput" class="block font-medium">Choisir une ville :</label>
+      <input type="text" id="cityInput" placeholder="Ex : Paris"
+        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all"
+        autocomplete="off" />
+      <!-- Autocomplete suggestions -->
+      <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden"></ul>
+      <div class="flex gap-2 mt-2">
+        <button id="fetchBtn" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition-all">
+          Rechercher
+        </button>
+        <button id="geoBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-all">
+          📍 Ma position
+        </button>
+      </div>
+    </div>
+
+    <div id="loader" class="hidden flex justify-center items-center py-4">
+      <div class="loader"></div>
+      <span class="ml-3 text-indigo-500 font-medium">Chargement…</span>
+    </div>
+
+    <div id="result" class="mt-4 hidden transition-all duration-700">
+      <div class="flex items-center justify-center mb-2">
+        <span id="emoji" class="text-4xl"></span>
+        <h2 class="text-xl font-bold ml-2" id="location"></h2>
+      </div>
+      <div id="quality" class="text-lg font-semibold"></div>
+      <div id="recommendation" class="mt-2 text-base"></div>
+    </div>
+
+    <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 text-center font-medium"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
