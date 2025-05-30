@@ -128,17 +128,35 @@ Ouvre index.html dans ton navigateur
 Uploade tous les fichiers sur S3 (bucket public “static website”)
 Pointe une distribution CloudFront vers ton bucket
 Ajoute/Configure le workflow GitHub Actions pour automatiser le déploiement
-🔒 Sécurité
+---
+
+## 📊 Monitoring & Alerting
+
+AirCare est monitoré avec **AWS CloudWatch** :
+
+- 🔍 Logs structurés CloudWatch
+- ⚠️ Alarme si erreur Lambda
+- 📧 Alerte email avec SNS
+- 📷 Exemple :
+
+![CloudWatch Alarm](./assets/cloudwatch-alarm.png)
+---
+
+
+## 🔒 **Sécurité**
 
 Aucune clé API dans le frontend ou le repo
 Tout passe par un proxy cloud AWS
 Droits IAM minimaux pour la CI/CD (S3 + CloudFront)
-🏆 Ce projet illustre :
+---
+## 🏆 **Conclusion**
 
 Développement cloud moderne (serverless, S3, CloudFront, Lambda)
 Sécurité API (clé jamais exposée)
 CI/CD automatisé (GitHub Actions)
 Responsive design et UX claire
+
+---
 📧 Contact
 
 Bryan Nakache
