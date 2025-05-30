@@ -139,7 +139,8 @@ AirCare est monitoré avec **AWS CloudWatch** :
 - 📧 Alerte email avec SNS
 - 📷 Exemple :
 
-![CloudWatch Alarm](./assets/cloudwatch-alarm.png)
+![CloudWatch Alarm](assets/cloudwatch-alarm.png)
+
 ---
 
 
