@@ -141,11 +141,7 @@ AirCare est monitoré avec **AWS CloudWatch** :
 
 ![CloudWatch Alarm](assets1/cloudwatch-alarm.png)
 
-
-
 ---
-
-
 ## 🔒 **Sécurité**
 
 Aucune clé API dans le frontend ou le repo
