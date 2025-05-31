@@ -4,7 +4,27 @@
 It leverages a 100% serverless AWS architecture and integrates with the OpenWeatherMap API.
 
 ---
+## Deployment on CloudFront
 
+The static frontend of AirCare is hosted and distributed via Amazon CloudFront. You can access the live version of the project at:
+
+[https://d1wvrgloixxub.cloudfront.net](https://d1wvrgloixxub.cloudfront.net)
+
+This CloudFront distribution points to the S3 bucket configured to serve all HTML, CSS, JS, and static assets. On every push to the `main` branch, the GitHub Actions workflow automatically:
+
+1. Syncs the local contents of the `aircare/` folder to the S3 bucket.  
+2. Invalidates the CloudFront cache to ensure the latest changes are served immediately.
+
+---
+
+## CloudWatch & SNS Screenshots
+
+Below is a screenshot showing the CloudWatch alarm configuration linked to an SNS topic:
+
+![CloudWatch & SNS Configuration](assets/cloudwatch-alarm.png)
+
+
+---
 ## 🧱 Cloud Architecture (diagram)
 
 ![AirCare Architecture](assets1/diagramme.png)
