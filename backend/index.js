@@ -1,8 +1,8 @@
-// index.js — Lambda AirCare avec AWS SDK V3 (Node.js 18.x)
-// Utilise CommonJS, compatible avec le runtime Node.js 18.x de Lambda.
+// index.js — Lambda AirCare with AWS SDK V3 (Node.js 18.x)
+// Uses CommonJS, compatible with the Node.js 18.x Lambda runtime.
+// The Node.js 18.x runtime provides fetch() globally.
 
-// Le runtime Node.js 18.x fournit déjà fetch() globalement.
-
+// --- Import AWS SDK V3 clients and commands for DynamoDB ---
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient,
@@ -10,29 +10,30 @@ const {
   QueryCommand
 } = require("@aws-sdk/lib-dynamodb");
 
-// Instanciation du client DynamoDB V3.
-// La région sera automatiquement détectée depuis l’environnement Lambda.
+// Instantiate DynamoDB client (region is auto-detected in Lambda)
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 
-// Nom de la table, défini dans les variables d’environnement de la Lambda.
+// DynamoDB table name from Lambda environment variable (default fallback)
 const TABLE_NAME = process.env.TABLE_NAME || "AirCareHistoryAQI";
 
+// Lambda entry point
 exports.handler = async (event) => {
   console.log("📥 Event raw:", JSON.stringify(event));
 
+  // Retrieve OpenWeather API key from Lambda environment variables
   const APIKEY = process.env.OPENWEATHER_APIKEY;
   let statusCode = 200;
   let responseBody = {};
 
   try {
-    // Détermination du chemin (API Gateway ou Function URL)
+    // Determine endpoint path (supports API Gateway or Lambda Function URL)
     const path = event.resource || event.requestContext?.http?.path || event.path;
     const params = event.queryStringParameters || {};
     console.log("🔔 Path:", path);
     console.log("🔍 Parameters:", JSON.stringify(params));
 
-    // ── GEO DIRECT ──
+    // --- GEO DIRECT: Get geocoding suggestions from OpenWeatherMap ---
     if (path.endsWith("/geo/direct")) {
       const { q, limit } = params;
       if (!q) throw new Error("Missing 'q' parameter");
@@ -43,7 +44,8 @@ exports.handler = async (event) => {
       const openRes = await fetch(apiUrl);
       responseBody = await openRes.json();
     }
-    // ── GEO REVERSE ──
+
+    // --- GEO REVERSE: Get city name from coordinates ---
     else if (path.endsWith("/geo/reverse")) {
       const { lat, lon, limit } = params;
       if (!lat || !lon) throw new Error("Missing 'lat' or 'lon' parameter");
@@ -54,12 +56,13 @@ exports.handler = async (event) => {
       const openRes = await fetch(apiUrl);
       responseBody = await openRes.json();
     }
-    // ── AIR POLLUTION (enregistrement dans DynamoDB) ──
+
+    // --- AIR POLLUTION: Fetch AQI from OpenWeatherMap and store in DynamoDB ---
     else if (path.endsWith("/air")) {
       let latitude, longitude;
       const { city, lat, lon } = params;
 
-      // Géocodage par ville ou direct via lat+lon
+      // Geocode by city name if provided, else use direct lat/lon
       if (city) {
         console.log("📍 Looking up city:", city);
         const geoRes = await fetch(
@@ -75,7 +78,7 @@ exports.handler = async (event) => {
         longitude = lon;
       }
 
-      // Appel à l’API Air Pollution d’OpenWeather
+      // Call OpenWeather Air Pollution API
       const apiUrl =
         `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${APIKEY}`;
       console.log("🌐 Air Pollution URL:", apiUrl);
@@ -84,13 +87,14 @@ exports.handler = async (event) => {
       const aqiPayload = await openRes.json();
       console.log("✅ OpenWeather response:", aqiPayload);
 
+      // Parse response for AQI and pollution components
       const record = aqiPayload.list && aqiPayload.list[0];
-      if (!record) throw new Error("Impossible de récupérer les données AQI");
+      if (!record) throw new Error("Could not retrieve AQI data");
       const aqiValue = record.main.aqi;
       const timestamp = new Date().toISOString();
       const locationKey = `${latitude},${longitude}`;
 
-      // Préparation de l’item à insérer dans DynamoDB
+      // Prepare DynamoDB item (including custom AQI advice)
       const item = {
         location: locationKey,
         timestamp: timestamp,
@@ -99,17 +103,17 @@ exports.handler = async (event) => {
         pm10: record.components.pm10,
         advice:
           aqiValue === 1
-            ? "Bonne qualité"
+            ? "Good quality"
             : aqiValue === 2
-            ? "Qualité acceptable"
+            ? "Acceptable quality"
             : aqiValue === 3
-            ? "Sensibilité accrue"
+            ? "Increased sensitivity"
             : aqiValue === 4
-            ? "Pollution élevée"
-            : "Danger pour la santé"
+            ? "High pollution"
+            : "Dangerous for health"
       };
 
-      // Insertion dans DynamoDB avec AWS SDK V3
+      // Insert AQI data into DynamoDB
       try {
         await ddb.send(
           new PutCommand({
@@ -119,11 +123,11 @@ exports.handler = async (event) => {
         );
         console.log("🗄️ Inserted item into DynamoDB:", item);
       } catch (ddbErr) {
-        console.error("❌ Erreur DynamoDB PutItem:", ddbErr);
-        throw new Error("Échec enregistrement DynamoDB: " + ddbErr.message);
+        console.error("❌ DynamoDB PutItem error:", ddbErr);
+        throw new Error("DynamoDB write failed: " + ddbErr.message);
       }
 
-      // Réponse au frontend
+      // Respond to frontend
       responseBody = {
         location: locationKey,
         timestamp: timestamp,
@@ -132,17 +136,18 @@ exports.handler = async (event) => {
         components: record.components
       };
     }
-    // ── HISTORIQUE AQI (lecture) ──
+
+    // --- HISTORY: Retrieve AQI history from DynamoDB for a given location ---
     else if (path.endsWith("/history")) {
       const { location } = params;
-      if (!location) throw new Error("Paramètre 'location' manquant");
+      if (!location) throw new Error("Missing 'location' parameter");
 
       let items;
       try {
         const result = await ddb.send(
           new QueryCommand({
             TableName: TABLE_NAME,
-            // Utiliser un alias (#loc) car "location" est mot réservé
+            // Use alias (#loc) because "location" is a reserved keyword
             KeyConditionExpression: "#loc = :locValue",
             ExpressionAttributeNames: {
               "#loc": "location"
@@ -150,14 +155,14 @@ exports.handler = async (event) => {
             ExpressionAttributeValues: {
               ":locValue": location
             },
-            ScanIndexForward: true // tri ascendant
+            ScanIndexForward: true // Ascending order (oldest to newest)
           })
         );
         items = result.Items;
         console.log(`📚 Found ${items.length} items for location=${location}`);
       } catch (queryErr) {
-        console.error("❌ Erreur DynamoDB Query:", queryErr);
-        throw new Error("Échec lecture historique DynamoDB: " + queryErr.message);
+        console.error("❌ DynamoDB Query error:", queryErr);
+        throw new Error("DynamoDB history read failed: " + queryErr.message);
       }
 
       responseBody = {
@@ -165,7 +170,8 @@ exports.handler = async (event) => {
         history: items
       };
     }
-    // ── ENDPOINT INCONNU ──
+
+    // --- UNKNOWN ENDPOINT ---
     else {
       throw new Error("Unknown endpoint: " + path);
     }
@@ -175,6 +181,7 @@ exports.handler = async (event) => {
     responseBody = { error: err.message };
   }
 
+  // --- Standard API Gateway/Lambda proxy response with CORS headers ---
   return {
     statusCode,
     headers: {
