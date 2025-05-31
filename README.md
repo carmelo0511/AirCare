@@ -57,6 +57,29 @@ Below is a screenshot showing the CloudWatch alarm configuration linked to an SN
 - 📦 **S3**: Static assets hosting
 ---
 
+## 🖥️ Backend Lambda
+
+All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
+
+- **Language:** Node.js 18.x (uses AWS SDK v3, native `fetch()`)
+- **Endpoints handled:**
+  - `/geo/direct` – City autocomplete (OpenWeatherMap API)
+  - `/geo/reverse` – Reverse geocoding (coordinates → city)
+  - `/air` – Air Quality Index (AQI) for a location or city (stores each lookup in DynamoDB)
+  - `/history` – Fetch AQI lookup history from DynamoDB for a specific location
+- **Features:**
+  - Persists each AQI lookup to DynamoDB (`AirCareHistoryAQI`)
+  - Adds tailored health advice for each AQI level
+  - Handles errors and logs all requests to CloudWatch
+  - API keys and table names are **never hardcoded** (managed with environment variables)
+- **How to deploy:**  
+  1. Edit the code in [`backend/index.js`](./backend/index.js)  
+  2. Zip the contents of `backend/` and upload to AWS Lambda (or automate via CI/CD)  
+  3. See comments in `index.js` for full code explanations
+
+---
+
+
 ## 🚀 Features
 
 - 📍 Automatic geolocation for current city detection
