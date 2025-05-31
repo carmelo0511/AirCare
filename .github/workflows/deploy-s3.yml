@@ -1,34 +1,23 @@
-# This GitHub Actions workflow deploys the static website to AWS S3 and invalidates the CloudFront cache after every push to 'main'.
+# This GitHub Actions workflow deploys the static website to AWS S3,
+# invalidates the CloudFront cache, and updates the AWS Lambda backend
+# automatically on every push to 'main'.
 
-name: Deploy to S3 and Invalidate CloudFront
+name: Deploy to S3, Invalidate CloudFront & Deploy Lambda
 
 on:
   push:
     branches:
       - main
-    # The workflow will run automatically every time there is a push to the main branch.
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # The job runs on the latest Ubuntu runner.
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        # Checks out the repository code so that the workflow can access the files.
 
-      # (Optional) Node.js setup, required only if you have a build step for tools like React, Vue, etc.
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18
-      # Skipped here because the project uses pure HTML/CSS/JS.
-
-      # Build step (uncomment if your frontend needs to be built, for example with npm run build)
-      # - name: Build
-      #   run: npm ci && npm run build
-
+      # ----- FRONTEND DEPLOY -----
       - name: Sync S3 bucket
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
@@ -38,10 +27,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'ca-central-1'
-          SOURCE_DIR: './'
-        # Deploys the contents of the repository to the specified S3 bucket.
-        # The --delete flag removes files from S3 that no longer exist in the source directory.
-        # AWS credentials and bucket name are securely injected from GitHub secrets.
+          SOURCE_DIR: './frontend'      # <-- adapt this if your frontend is not in './frontend'
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
@@ -51,5 +37,26 @@ jobs:
           AWS_REGION: 'ca-central-1'
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
           PATHS: "/*"
-        # Invalidates all objects in the CloudFront distribution cache after deployment.
-        # This ensures users immediately see the latest version of the website.
+
+      # ----- BACKEND (LAMBDA) DEPLOY -----
+      - name: Install zip (for packaging Lambda)
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Package Lambda function
+        run: |
+          cd backend
+          zip -r ../lambda.zip . -x "*.git*" "node_modules/*" "*.zip"
+          cd ..
+        # Zips the backend folder except .git, node_modules, and existing .zip files
+
+      - name: Deploy Lambda function
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://lambda.zip
+        # Deploys the zipped Lambda code to AWS Lambda
+
