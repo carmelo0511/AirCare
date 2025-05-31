@@ -4,23 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AirCare - Qualité de l'air</title>
+  <!-- Import Tailwind CSS from CDN for rapid styling -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Optionally add your own custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center text-gray-800 font-sans transition-all duration-700">
+  <!-- Main container for the app -->
   <div class="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl relative">
+    <!-- Application title with emoji -->
     <h1 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
       <span>🌿</span> AirCare
     </h1>
 
+    <!-- City selection and geolocation controls -->
     <div class="mb-4 flex flex-col gap-2 relative">
       <label for="cityInput" class="block font-medium">Choisir une ville :</label>
+      <!-- Input for manual city search with autocomplete -->
       <input type="text" id="cityInput" placeholder="Ex : Paris"
         class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all"
         autocomplete="off" />
-      <!-- Autocomplete suggestions -->
+      <!-- Autocomplete dropdown suggestions (hidden by default) -->
       <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden"></ul>
 
+      <!-- Buttons: Search by city or use geolocation -->
       <div class="flex gap-2 mt-2">
         <button id="fetchBtn" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition-all">
           Rechercher
@@ -31,29 +38,36 @@
       </div>
     </div>
 
+    <!-- Loader spinner, shown during data fetch -->
     <div id="loader" class="hidden flex justify-center items-center py-4">
       <div class="loader"></div>
       <span class="ml-3 text-indigo-500 font-medium">Chargement…</span>
     </div>
 
+    <!-- Error message display, hidden by default -->
     <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 text-center font-medium"></div>
 
+    <!-- AQI result panel, hidden by default -->
     <div id="result" class="mt-4 hidden transition-all duration-700">
       <div class="flex items-center justify-center mb-2">
+        <!-- Emoji for AQI level -->
         <span id="emoji" class="text-4xl"></span>
+        <!-- City/location label -->
         <h2 class="text-xl font-bold ml-2" id="location"></h2>
       </div>
+      <!-- Air quality label -->
       <div id="quality" class="text-lg font-semibold"></div>
+      <!-- Health recommendation based on AQI -->
       <div id="recommendation" class="mt-2 text-base"></div>
     </div>
 
-    <!-- --- NOUVELLE SECTION : Historique AQI --- -->
+    <!-- AQI History Section: recent measurements -->
     <div id="historySection" class="mt-6 hidden transition-all duration-700">
       <h3 class="text-lg font-semibold mb-2">Historique AQI</h3>
       <ul id="historyList" class="list-disc list-inside text-sm text-gray-700"></ul>
     </div>
-
   </div>
+  <!-- Main JavaScript file for frontend logic -->
   <script src="app.js"></script>
 </body>
 </html>
