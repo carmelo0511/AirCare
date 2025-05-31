@@ -1,25 +1,31 @@
+# This GitHub Actions workflow deploys the static website to AWS S3 and invalidates the CloudFront cache after every push to 'main'.
+
 name: Deploy to S3 and Invalidate CloudFront
 
 on:
   push:
     branches:
       - main
+    # The workflow will run automatically every time there is a push to the main branch.
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # The job runs on the latest Ubuntu runner.
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        # Checks out the repository code so that the workflow can access the files.
 
-      # (Optionnel) Installe Node si build (pas nécessaire pour HTML/CSS/JS pur)
+      # (Optional) Node.js setup, required only if you have a build step for tools like React, Vue, etc.
       # - name: Setup Node.js
       #   uses: actions/setup-node@v4
       #   with:
       #     node-version: 18
+      # Skipped here because the project uses pure HTML/CSS/JS.
 
-      # Build step (si besoin, par exemple npm run build)
+      # Build step (uncomment if your frontend needs to be built, for example with npm run build)
       # - name: Build
       #   run: npm ci && npm run build
 
@@ -33,6 +39,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'ca-central-1'
           SOURCE_DIR: './'
+        # Deploys the contents of the repository to the specified S3 bucket.
+        # The --delete flag removes files from S3 that no longer exist in the source directory.
+        # AWS credentials and bucket name are securely injected from GitHub secrets.
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
@@ -42,3 +51,5 @@ jobs:
           AWS_REGION: 'ca-central-1'
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
           PATHS: "/*"
+        # Invalidates all objects in the CloudFront distribution cache after deployment.
+        # This ensures users immediately see the latest version of the website.

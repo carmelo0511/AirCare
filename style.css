@@ -1,26 +1,31 @@
+/* --- Loader spinner (circular animation) --- */
 .loader {
-  border: 4px solid #e0e7ff;
-  border-top: 4px solid #6366f1;
-  border-radius: 50%;
+  border: 4px solid #e0e7ff;         /* Light border (background ring) */
+  border-top: 4px solid #6366f1;     /* Colored border (spinning part) */
+  border-radius: 50%;                /* Makes it round */
   width: 32px;
   height: 32px;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  animation: spin 1s linear infinite; /* Infinite rotation animation */
 }
 
-/* Autocomplete suggestions */
+@keyframes spin {
+  to { transform: rotate(360deg); }   /* Full circle rotation */
+}
+
+/* --- Autocomplete suggestions dropdown --- */
 #citySuggestions {
-  max-height: 180px;
-  overflow-y: auto;
-  box-shadow: 0 4px 16px 0 #0001;
+  max-height: 180px;                  /* Limits dropdown height */
+  overflow-y: auto;                   /* Scroll if too many suggestions */
+  box-shadow: 0 4px 16px 0 #0001;     /* Soft drop shadow for floating effect */
 }
+
 #citySuggestions li {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  padding: 0.5rem 1rem;               /* Spacing for each suggestion */
+  cursor: pointer;                    /* Pointer cursor on hover */
+  transition: background 0.2s;        /* Smooth hover transition */
 }
-#citySuggestions li:hover, #citySuggestions .active {
-  background: #eef2ff;
+
+#citySuggestions li:hover,
+#citySuggestions .active {
+  background: #eef2ff;                /* Highlight on hover or active */
 }
