@@ -21,7 +21,7 @@ This CloudFront distribution points to the S3 bucket configured to serve all HTM
 
 Below is a screenshot showing the CloudWatch alarm configuration linked to an SNS topic:
 
-![CloudWatch & SNS Configuration](assets/cloudwatch-alarm.png)
+![CloudWatch & SNS Configuration](assets1/cloudwatch-alarm.png)
 
 
 ---
