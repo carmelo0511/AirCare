@@ -2,7 +2,7 @@
 
 **AirCare** is a cloud-native web application that provides real-time air quality data (AQI) for people with asthma or respiratory sensitivity.  
 It leverages a 100% serverless AWS architecture and integrates with the OpenWeatherMap API.
-
+This project is fully automated: every push to GitHub updates both the frontend (S3/CloudFront) and the backend (AWS Lambda) via CI/CD with GitHub Actions. No manual deployments required.
 ---
 
 ## Deployment on CloudFront
