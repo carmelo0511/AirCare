@@ -4,6 +4,7 @@
 It leverages a 100% serverless AWS architecture and integrates with the OpenWeatherMap API.
 
 ---
+
 ## Deployment on CloudFront
 
 The static frontend of AirCare is hosted and distributed via Amazon CloudFront. You can access the live version of the project at:
@@ -17,14 +18,29 @@ This CloudFront distribution points to the S3 bucket configured to serve all HTM
 
 ---
 
+## DynamoDB AQI History (NEW)
+
+AirCare **persists all AQI lookups** to a DynamoDB table (`AirCareHistoryAQI`).  
+Each time a user requests air quality for a city or location, the following data is stored :
+- Location (`lat,lon`)
+- Timestamp (ISO format)
+- AQI value
+- Particulate data (PM2.5, PM10, etc.)
+- Health advice
+
+A dedicated endpoint (`/history`) allows the frontend to **display the full AQI history** for any location.  
+This enables analytics, trends, and potential dashboards (QuickSight integration is the next step).
+
+---
+
 ## CloudWatch & SNS Screenshots
 
 Below is a screenshot showing the CloudWatch alarm configuration linked to an SNS topic:
 
 ![CloudWatch & SNS Configuration](assets1/cloudwatch-alarm.png)
 
-
 ---
+
 ## 🧱 Cloud Architecture (diagram)
 
 ![AirCare Architecture](assets1/diagramme.png)
@@ -33,12 +49,12 @@ Below is a screenshot showing the CloudWatch alarm configuration linked to an SN
 
 - ⚡ **Frontend**: HTML, Tailwind CSS, JavaScript
 - ☁️ **Backend**: AWS Lambda (Node.js)
-- 🌐 **API Gateway**: Handles endpoints `/air`, `/geo/direct`, `/geo/reverse`
+- 🌐 **API Gateway**: Handles endpoints `/air`, `/geo/direct`, `/geo/reverse`, `/history`
+- 🗃️ **DynamoDB**: Stores AQI history for analytics & dashboards
 - 🔒 **API key secured** (OpenWeatherMap) via Lambda proxy
 - 🔍 **CloudWatch logs** for backend observability
 - ⚠️ **CloudWatch Alarm** + **SNS Email alert** on Lambda error
-- 🗃️ **(Planned)**: Store AQI history in **DynamoDB** + visualize with **QuickSight**
-
+- 📦 **S3**: Static assets hosting
 ---
 
 ## 🚀 Features
@@ -46,6 +62,7 @@ Below is a screenshot showing the CloudWatch alarm configuration linked to an SN
 - 📍 Automatic geolocation for current city detection
 - 🔍 City search with autocompletion
 - 💨 Displays air quality index + health advice based on AQI
+- 📈 Displays local AQI history (via DynamoDB)
 - 🔐 Secure server-side OpenWeather API access
 - 🌐 Clean UI/UX with Tailwind CSS
 
@@ -58,6 +75,7 @@ This project is fully deployed on **AWS**:
 - 🗂️ Static frontend hosted on **S3**
 - 🚀 Served via **CloudFront**
 - ⚙️ Backend built with **Lambda + API Gateway**
+- 🗃️ **AQI history stored in DynamoDB**
 - ✅ CI/CD automated with **GitHub Actions**
 
 ---
@@ -67,19 +85,19 @@ This project is fully deployed on **AWS**:
 - 🧠 Structured **CloudWatch logs** on every request
 - ⚠️ **CloudWatch Alarm** triggered on ≥ 1 error/minute
 - 📧 Email notifications via **SNS**
-- 🔜 AQI history will be stored in **DynamoDB** for analytics
+- 📉 AQI history stored and visualizable via **DynamoDB**
 
 ---
 
 ## 📂 Project Structure
 
-AirCare/
-├── assets1/ # Images & diagrams
-│ └── diagramme.png
-├── backend/ # Lambda source code
-├── frontend/ # HTML/CSS/JavaScript
-├── .github/workflows/ # CI/CD with GitHub Actions
-├── README.md # This file
+AirCare/  
+├── assets1/ # Images & diagrams  
+│   └── diagramme.png  
+├── backend/ # Lambda source code  
+├── frontend/ # HTML/CSS/JavaScript  
+├── .github/workflows/ # CI/CD with GitHub Actions  
+├── README.md # This file  
 
 ---
 
@@ -93,8 +111,7 @@ AirCare/
 
 ## 🚧 Upcoming Improvements
 
-- 🗃️ Add **DynamoDB** to log user queries and AQI history
-- 📊 Build a **QuickSight Dashboard** for AQI trends
+- 📊 Build a **QuickSight Dashboard** for AQI trends (from DynamoDB)
 - 👥 Integrate **Amazon Cognito** for user authentication
 - 📜 Implement API Gateway **usage plans and throttling**
 
