@@ -117,13 +117,18 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     emojiDisplay.textContent = info.emoji;
     showResult(true);
 
-    // 4. Appel /history
+    // 4. Appel /history, limitation à 5 lignes les plus récentes
     const histRes = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + "," + lon)}`);
     const histData = await histRes.json();
     if (histData.history && histData.history.length) {
-      histData.history.forEach(item => {
+      const sorted = histData.history.sort((a, b) =>
+        new Date(b.timestamp) - new Date(a.timestamp)
+      );
+      sorted.slice(0, 5).forEach(item => {
+        const date = new Date(item.timestamp);
+        const dateStr = date.toLocaleString("fr-FR");
         const li = document.createElement("li");
-        li.textContent = `${item.timestamp} → AQI ${item.aqi} (${item.advice})`;
+        li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})`;
         historyList.appendChild(li);
       });
       showHistory(true);
