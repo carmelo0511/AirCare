@@ -136,7 +136,7 @@ describe('handler /history', () => {
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body.history).toEqual([{ aqi: 1 }]);
+    expect(body.history).toEqual([{ aqi: 1, advice: 'Good quality' }]);
   });
 
   test('normalizes coordinates to two decimals', async () => {
@@ -148,7 +148,7 @@ describe('handler /history', () => {
     }));
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
-    expect(body.history).toEqual([{ aqi: 2 }]);
+    expect(body.history).toEqual([{ aqi: 2, advice: 'Acceptable quality' }]);
   });
 
   test('returns error when location parameter missing', async () => {
