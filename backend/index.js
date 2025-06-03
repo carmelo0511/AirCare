@@ -30,6 +30,13 @@ function getAdvice(aqi) {
     : "Dangerous for health";
 }
 
+// Helper to fetch JSON from OpenWeatherMap with English responses
+async function fetchJsonWithEnglish(url) {
+  const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+  if (!res.ok) throw new Error(res.statusText);
+  return res.json();
+}
+
 // Lambda entry point
 exports.handler = async (event) => {
   console.log("📥 Event raw:", JSON.stringify(event));
@@ -66,11 +73,7 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}` +
         `&limit=${limit || 5}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Direct URL:", apiUrl);
-      const openRes = await fetch(apiUrl, {
-        headers: { 'Accept-Language': 'en' }
-      });
-      if (!openRes.ok) throw new Error(openRes.statusText);
-      responseBody = await openRes.json();
+      responseBody = await fetchJsonWithEnglish(apiUrl);
     }
 
     // --- GEO REVERSE: Get city name from coordinates ---
@@ -81,11 +84,7 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}` +
         `&limit=${limit || 1}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Reverse URL:", apiUrl);
-      const openRes = await fetch(apiUrl, {
-        headers: { 'Accept-Language': 'en' }
-      });
-      if (!openRes.ok) throw new Error(openRes.statusText);
-      responseBody = await openRes.json();
+      responseBody = await fetchJsonWithEnglish(apiUrl);
     }
 
     // --- AIR POLLUTION: Fetch AQI from OpenWeatherMap and store in DynamoDB ---
@@ -96,12 +95,9 @@ exports.handler = async (event) => {
       // Geocode by city name if provided, else use direct lat/lon
       if (city) {
         console.log("📍 Looking up city:", city);
-        const geoRes = await fetch(
-          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&lang=en&appid=${APIKEY}`,
-          { headers: { 'Accept-Language': 'en' } }
+        const geoData = await fetchJsonWithEnglish(
+          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&lang=en&appid=${APIKEY}`
         );
-        if (!geoRes.ok) throw new Error(geoRes.statusText);
-        const geoData = await geoRes.json();
         if (!geoData.length) throw new Error("City not found");
         latitude = geoData[0].lat;
         longitude = geoData[0].lon;
@@ -121,11 +117,7 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Air Pollution URL:", apiUrl);
 
-      const openRes = await fetch(apiUrl, {
-        headers: { 'Accept-Language': 'en' }
-      });
-      if (!openRes.ok) throw new Error(openRes.statusText);
-      const aqiPayload = await openRes.json();
+      const aqiPayload = await fetchJsonWithEnglish(apiUrl);
       console.log("✅ OpenWeather response:", aqiPayload);
 
       // Parse response for AQI and pollution components
