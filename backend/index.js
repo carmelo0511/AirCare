@@ -51,7 +51,7 @@ exports.handler = async (event) => {
       if (!q) throw new Error("Missing 'q' parameter");
       const apiUrl =
         `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}` +
-        `&limit=${limit || 5}&appid=${APIKEY}`;
+        `&limit=${limit || 5}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Direct URL:", apiUrl);
       const openRes = await fetch(apiUrl);
       if (!openRes.ok) throw new Error(openRes.statusText);
@@ -64,7 +64,7 @@ exports.handler = async (event) => {
       if (!lat || !lon) throw new Error("Missing 'lat' or 'lon' parameter");
       const apiUrl =
         `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}` +
-        `&limit=${limit || 1}&appid=${APIKEY}`;
+        `&limit=${limit || 1}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Reverse URL:", apiUrl);
       const openRes = await fetch(apiUrl);
       if (!openRes.ok) throw new Error(openRes.statusText);
@@ -80,7 +80,7 @@ exports.handler = async (event) => {
       if (city) {
         console.log("📍 Looking up city:", city);
         const geoRes = await fetch(
-          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${APIKEY}`
+          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&lang=en&appid=${APIKEY}`
         );
         if (!geoRes.ok) throw new Error(geoRes.statusText);
         const geoData = await geoRes.json();
@@ -100,7 +100,7 @@ exports.handler = async (event) => {
 
       // Call OpenWeather Air Pollution API
       const apiUrl =
-        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${APIKEY}`;
+        `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Air Pollution URL:", apiUrl);
 
       const openRes = await fetch(apiUrl);
@@ -162,6 +162,8 @@ exports.handler = async (event) => {
     else if (path.endsWith("/history")) {
       const { location } = params;
       if (!location) throw new Error("Missing 'location' parameter");
+      // Decode in case the location string was URI encoded by the frontend
+      const locValue = decodeURIComponent(location);
 
       let items;
       try {
@@ -174,7 +176,7 @@ exports.handler = async (event) => {
               "#loc": "location"
             },
             ExpressionAttributeValues: {
-              ":locValue": location
+              ":locValue": locValue
             },
             ScanIndexForward: true, // Ascending order (oldest to newest)
             ConsistentRead: true
@@ -182,7 +184,7 @@ exports.handler = async (event) => {
         );
         items = result.Items || [];
         console.log(
-          `📚 Found ${items.length} items for location=${location}`
+          `📚 Found ${items.length} items for location=${locValue}`
         );
       } catch (queryErr) {
         console.error("❌ DynamoDB Query error:", queryErr);
@@ -190,7 +192,7 @@ exports.handler = async (event) => {
       }
 
       responseBody = {
-        location: location,
+        location: locValue,
         history: items
       };
     }
