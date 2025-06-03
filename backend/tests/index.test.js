@@ -63,6 +63,7 @@ describe('handler /geo/reverse', () => {
 
   test('returns data for valid lat/lon parameters', async () => {
     global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
       json: jest.fn().mockResolvedValue([{ name: 'Paris' }])
     });
     const event = { resource: '/geo/reverse', queryStringParameters: { lat: '1', lon: '2' } };
@@ -91,8 +92,8 @@ describe('handler /air', () => {
 
   test('returns AQI data when city parameter provided', async () => {
     global.fetch = jest.fn()
-      .mockResolvedValueOnce({ json: jest.fn().mockResolvedValue([{ lat: 10, lon: 20 }]) })
-      .mockResolvedValueOnce({ json: jest.fn().mockResolvedValue({
+      .mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValue([{ lat: 10, lon: 20 }]) })
+      .mockResolvedValueOnce({ ok: true, json: jest.fn().mockResolvedValue({
         list: [{ main: { aqi: 2 }, components: { pm2_5: 5, pm10: 10 } }]
       }) });
 
