@@ -16,6 +16,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test --silent
 
       # ----- FRONTEND DEPLOY -----
       - name: Sync S3 bucket
@@ -45,9 +57,9 @@ jobs:
       - name: Package Lambda function
         run: |
           cd backend
-          zip -r ../lambda.zip . -x "*.git*" "node_modules/*" "*.zip"
+          zip -r ../lambda.zip . -x "*.git*" "*.zip"
           cd ..
-        # Zips the backend folder except .git, node_modules, and existing .zip files
+        # Include node_modules so Lambda has required dependencies
 
       - name: Deploy Lambda function
         env:

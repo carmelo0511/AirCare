@@ -170,7 +170,15 @@ exports.handler = async (event) => {
       const { location } = params;
       if (!location) throw new Error("Missing 'location' parameter");
       // Decode in case the location string was URI encoded by the frontend
-      const locValue = decodeURIComponent(location);
+      let locValue = decodeURIComponent(location);
+      // Normalize coordinates to the same precision used when storing
+      // (2 decimal places) so requests with extra precision still match
+      if (/^[-\d.]+,[-\d.]+$/.test(locValue)) {
+        const [latStr, lonStr] = locValue.split(',');
+        const normLat = Number(parseFloat(latStr).toFixed(2));
+        const normLon = Number(parseFloat(lonStr).toFixed(2));
+        locValue = `${normLat},${normLon}`;
+      }
 
       let items;
       try {
