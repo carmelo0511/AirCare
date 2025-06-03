@@ -14,6 +14,7 @@ const errorMsg = document.getElementById('errorMsg');
 const locationDisplay = document.getElementById('location');
 const qualityDisplay = document.getElementById('quality');
 const recommendation = document.getElementById('recommendation');
+const componentsDisplay = document.getElementById('components');
 const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
@@ -130,6 +131,8 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     if (!airData || airData.error) throw new Error(airData.error || "AQI data unavailable");
     const aqi = airData.aqi;
     const info = AQI_MAP[aqi - 1];
+    const pm25 = airData.components?.pm2_5;
+    const pm10 = airData.components?.pm10;
 
     // 3. Update UI with AQI and advice
     locationDisplay.textContent = cityLabel;
@@ -137,6 +140,11 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     qualityDisplay.className = `text-lg font-semibold ${info.color}`;
     recommendation.innerHTML = `<b>Advice:</b> ${info.advice}`;
     emojiDisplay.textContent = info.emoji;
+    if (pm25 !== undefined && pm10 !== undefined) {
+      componentsDisplay.textContent = `PM2.5: ${pm25} µg/m³ | PM10: ${pm10} µg/m³`;
+    } else {
+      componentsDisplay.textContent = "";
+    }
     showResult(true);
 
     // 4. Fetch AQI history from backend /history endpoint (last 5 entries)
@@ -150,7 +158,10 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
         const date = new Date(item.timestamp);
         const dateStr = date.toLocaleString("en-US");
         const li = document.createElement("li");
-        li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})`;
+        const comp = item.pm2_5 !== undefined && item.pm10 !== undefined
+          ? ` | PM2.5: ${item.pm2_5} µg/m³ | PM10: ${item.pm10} µg/m³`
+          : "";
+        li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})${comp}`;
         historyList.appendChild(li);
       });
       showHistory(true);
