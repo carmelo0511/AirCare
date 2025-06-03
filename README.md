@@ -142,7 +142,13 @@ AirCare/
 
 ---
 
+## License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+---
+
 ## 🙋 Contact
 
-Bryan Nakache  
+Bryan Nakache
 [LinkedIn](https://www.linkedin.com/in/bryan-nakache-08147b1b7/) • GitHub: [@carmelo0511](https://github.com/carmelo0511)
