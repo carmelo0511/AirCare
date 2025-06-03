@@ -103,7 +103,7 @@ async function getCityNameFromCoords(lat, lon) {
       return `${data[0].name}, ${data[0].country}`;
     }
   } catch (e) { }
-  return `Coordonnées : ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+  return `Coordonnées : ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
 }
 
 // --- Fetch AQI and History for Coordinates ---
@@ -120,9 +120,9 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     if (!cityLabel) {
       cityLabel = await getCityNameFromCoords(lat, lon);
     }
-
-    const roundedLat = Number(parseFloat(lat).toFixed(3));
-    const roundedLon = Number(parseFloat(lon).toFixed(3));
+    
+    const roundedLat = Number(parseFloat(lat).toFixed(2));
+    const roundedLon = Number(parseFloat(lon).toFixed(2));
 
     // 2. Fetch AQI data from backend /air endpoint
     const airRes = await fetch(`${apiBaseUrl}/air?lat=${roundedLat}&lon=${roundedLon}`);
