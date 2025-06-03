@@ -17,6 +17,19 @@ const ddb = DynamoDBDocumentClient.from(ddbClient);
 // DynamoDB table name from Lambda environment variable (default fallback)
 const TABLE_NAME = process.env.TABLE_NAME || "AirCareHistoryAQI";
 
+// Returns an English health recommendation string for an AQI value (1-5)
+function getAdvice(aqi) {
+  return aqi === 1
+    ? "Good quality"
+    : aqi === 2
+    ? "Acceptable quality"
+    : aqi === 3
+    ? "Increased sensitivity"
+    : aqi === 4
+    ? "High pollution"
+    : "Dangerous for health";
+}
+
 // Lambda entry point
 exports.handler = async (event) => {
   console.log("📥 Event raw:", JSON.stringify(event));
@@ -129,16 +142,7 @@ exports.handler = async (event) => {
         aqi: aqiValue,
         pm2_5: record.components.pm2_5,
         pm10: record.components.pm10,
-        advice:
-          aqiValue === 1
-            ? "Good quality"
-            : aqiValue === 2
-            ? "Acceptable quality"
-            : aqiValue === 3
-            ? "Increased sensitivity"
-            : aqiValue === 4
-            ? "High pollution"
-            : "Dangerous for health"
+        advice: getAdvice(aqiValue)
       };
 
       // Insert AQI data into DynamoDB
@@ -208,7 +212,10 @@ exports.handler = async (event) => {
 
       responseBody = {
         location: locValue,
-        history: items
+        history: items.map((it) => ({
+          ...it,
+          advice: getAdvice(it.aqi)
+        }))
       };
     }
 
