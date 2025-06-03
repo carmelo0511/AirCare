@@ -68,10 +68,12 @@ cityInput.addEventListener('input', () => {
       const data = await res.json();
       if (!data.length) return;
 
-      // Renders suggestions as clickable <li> elements
-      citySuggestions.innerHTML = data.map(city =>
-        `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${city.name}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`
-      ).join('');
+      // Renders suggestions using the English name when available
+      citySuggestions.innerHTML = data.map(city => {
+        const name = city.local_names && city.local_names.en ? city.local_names.en : city.name;
+        const state = city.state ? `, ${city.state}` : '';
+        return `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${name}${state}, ${city.country}</li>`;
+      }).join('');
       citySuggestions.classList.remove('hidden');
 
       // Click on a suggestion fills the input and hides the dropdown
@@ -101,7 +103,8 @@ async function getCityNameFromCoords(lat, lon) {
     const res = await fetch(`${apiBaseUrl}/geo/reverse?lat=${lat}&lon=${lon}&limit=1`);
     const data = await res.json();
     if (data && data[0]) {
-      return `${data[0].name}, ${data[0].country}`;
+      const name = data[0].local_names && data[0].local_names.en ? data[0].local_names.en : data[0].name;
+      return `${name}, ${data[0].country}`;
     }
   } catch (e) { }
   return `Coordinates: ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
@@ -193,9 +196,10 @@ async function fetchAirByCity(city) {
     const geoRes = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`);
     const geoData = await geoRes.json();
     if (!geoData.length) throw new Error("City not found.");
-    const { lat, lon, name, country } = geoData[0];
+    const { lat, lon, name, country, local_names } = geoData[0];
+    const englishName = local_names && local_names.en ? local_names.en : name;
     // Fetch AQI and history for those coordinates
-    await fetchAirAndHistory(lat, lon, `${name}, ${country}`);
+    await fetchAirAndHistory(lat, lon, `${englishName}, ${country}`);
   } catch (err) {
     showError("Error: " + err.message);
     showResult(false);
