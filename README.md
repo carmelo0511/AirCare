@@ -73,6 +73,8 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
   - Persists each AQI lookup to DynamoDB (`AirCareHistoryAQI`)
   - Adds tailored health advice for each AQI level
   - Handles errors and logs all requests to CloudWatch
+  - Enforces English responses from OpenWeather
+  - `/history` decodes the `location` parameter for reliable lookups
   - API keys and table names are **never hardcoded** (managed with environment variables)
 - **How to deploy:**  
   1. Edit the code in [`backend/index.js`](./backend/index.js)  
@@ -88,6 +90,7 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
 - 🔍 City search with autocompletion
 - 💨 Displays air quality index + health advice based on AQI
 - 📈 Displays local AQI history (via DynamoDB)
+- 📄 Shows a message when no history is available
 - 🔐 Secure server-side OpenWeather API access
 - 🌐 Clean UI/UX with Tailwind CSS
 
