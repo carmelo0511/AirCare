@@ -148,7 +148,7 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
       );
       sorted.slice(0, 5).forEach(item => {
         const date = new Date(item.timestamp);
-        const dateStr = date.toLocaleString("fr-FR");
+        const dateStr = date.toLocaleString("en-US");
         const li = document.createElement("li");
         li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})`;
         historyList.appendChild(li);
