@@ -154,6 +154,11 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
         historyList.appendChild(li);
       });
       showHistory(true);
+    } else {
+      const li = document.createElement("li");
+      li.textContent = "No history available for this location.";
+      historyList.appendChild(li);
+      showHistory(true);
     }
   } catch (err) {
     showError("Error: " + err.message);
