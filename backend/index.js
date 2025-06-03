@@ -93,6 +93,11 @@ exports.handler = async (event) => {
         longitude = lon;
       }
 
+      // Normalize coordinates to 3 decimal places so repeated geolocation
+      // queries map to the same DynamoDB partition key
+      latitude = Number(parseFloat(latitude).toFixed(3));
+      longitude = Number(parseFloat(longitude).toFixed(3));
+
       // Call OpenWeather Air Pollution API
       const apiUrl =
         `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&appid=${APIKEY}`;
