@@ -23,6 +23,18 @@ exports.handler = async (event) => {
 
   // Retrieve OpenWeather API key from Lambda environment variables
   const APIKEY = process.env.OPENWEATHER_APIKEY;
+  if (!APIKEY) {
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "OPTIONS,GET"
+      },
+      body: JSON.stringify({ error: "Missing OPENWEATHER_APIKEY" })
+    };
+  }
+
   let statusCode = 200;
   let responseBody = {};
 
@@ -42,6 +54,7 @@ exports.handler = async (event) => {
         `&limit=${limit || 5}&appid=${APIKEY}`;
       console.log("🌐 Geo Direct URL:", apiUrl);
       const openRes = await fetch(apiUrl);
+      if (!openRes.ok) throw new Error(openRes.statusText);
       responseBody = await openRes.json();
     }
 
@@ -54,6 +67,7 @@ exports.handler = async (event) => {
         `&limit=${limit || 1}&appid=${APIKEY}`;
       console.log("🌐 Geo Reverse URL:", apiUrl);
       const openRes = await fetch(apiUrl);
+      if (!openRes.ok) throw new Error(openRes.statusText);
       responseBody = await openRes.json();
     }
 
@@ -68,6 +82,7 @@ exports.handler = async (event) => {
         const geoRes = await fetch(
           `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${APIKEY}`
         );
+        if (!geoRes.ok) throw new Error(geoRes.statusText);
         const geoData = await geoRes.json();
         if (!geoData.length) throw new Error("City not found");
         latitude = geoData[0].lat;
@@ -84,6 +99,7 @@ exports.handler = async (event) => {
       console.log("🌐 Air Pollution URL:", apiUrl);
 
       const openRes = await fetch(apiUrl);
+      if (!openRes.ok) throw new Error(openRes.statusText);
       const aqiPayload = await openRes.json();
       console.log("✅ OpenWeather response:", aqiPayload);
 
