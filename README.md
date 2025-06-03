@@ -15,7 +15,7 @@ The static frontend of AirCare is hosted and distributed via Amazon CloudFront. 
 
 This CloudFront distribution points to the S3 bucket configured to serve all HTML, CSS, JS, and static assets. On every push to the `main` branch, the GitHub Actions workflow automatically:
 
-1. Syncs the local contents of the `aircare/` folder to the S3 bucket.  
+1. Syncs the local contents of the `frontend/` folder to the S3 bucket.
 2. Invalidates the CloudFront cache to ensure the latest changes are served immediately.
 
 ---
