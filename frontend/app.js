@@ -120,7 +120,7 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     if (!cityLabel) {
       cityLabel = await getCityNameFromCoords(lat, lon);
     }
-
+    
     const roundedLat = Number(parseFloat(lat).toFixed(2));
     const roundedLon = Number(parseFloat(lon).toFixed(2));
 
