@@ -1,10 +1,13 @@
 const mockSend = jest.fn();
 
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
-  DynamoDBDocumentClient: { from: () => ({ send: mockSend }) },
-  PutCommand: jest.fn(),
-  QueryCommand: jest.fn()
-}));
+jest.mock('@aws-sdk/lib-dynamodb', () => {
+  global.QueryCommandMock = jest.fn(options => ({ input: options }));
+  return {
+    DynamoDBDocumentClient: { from: () => ({ send: mockSend }) },
+    PutCommand: jest.fn(),
+    QueryCommand: global.QueryCommandMock
+  };
+});
 
 const { handler } = require('../index');
 
@@ -134,6 +137,18 @@ describe('handler /history', () => {
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
     expect(body.history).toEqual([{ aqi: 1 }]);
+  });
+
+  test('normalizes coordinates to two decimals', async () => {
+    mockSend.mockResolvedValueOnce({ Items: [{ aqi: 2 }] });
+    const event = { resource: '/history', queryStringParameters: { location: '1.234,2.789' } };
+    const res = await handler(event);
+    expect(QueryCommandMock).toHaveBeenCalledWith(expect.objectContaining({
+      ExpressionAttributeValues: { ':locValue': '1.23,2.79' }
+    }));
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.history).toEqual([{ aqi: 2 }]);
   });
 
   test('returns error when location parameter missing', async () => {

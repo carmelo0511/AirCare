@@ -74,7 +74,7 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
   - Adds tailored health advice for each AQI level
   - Handles errors and logs all requests to CloudWatch
   - Enforces English responses from OpenWeather
-  - `/history` decodes the `location` parameter for reliable lookups
+  - `/history` decodes and normalizes the `location` parameter for reliable lookups
   - API keys and table names are **never hardcoded** (managed with environment variables)
 - **How to deploy:**  
   1. Edit the code in [`backend/index.js`](./backend/index.js)  
@@ -105,6 +105,8 @@ This project is fully deployed on **AWS**:
 - ⚙️ Backend built with **Lambda + API Gateway**
 - 🗃️ **AQI history stored in DynamoDB**
 - ✅ CI/CD automated with **GitHub Actions**
+  - Tests run automatically during deployment
+  - Lambda package now includes Node.js dependencies
 
 ---
 
