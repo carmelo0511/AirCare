@@ -121,8 +121,11 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
       cityLabel = await getCityNameFromCoords(lat, lon);
     }
 
+    const roundedLat = Number(parseFloat(lat).toFixed(3));
+    const roundedLon = Number(parseFloat(lon).toFixed(3));
+
     // 2. Fetch AQI data from backend /air endpoint
-    const airRes = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
+    const airRes = await fetch(`${apiBaseUrl}/air?lat=${roundedLat}&lon=${roundedLon}`);
     const airData = await airRes.json();
     if (!airData || airData.error) throw new Error(airData.error || "Donnée AQI indisponible");
     const aqi = airData.aqi;
@@ -137,7 +140,7 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     showResult(true);
 
     // 4. Fetch AQI history from backend /history endpoint (last 5 entries)
-    const histRes = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + "," + lon)}`);
+    const histRes = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(roundedLat + "," + roundedLon)}`);
     const histData = await histRes.json();
     if (histData.history && histData.history.length) {
       const sorted = histData.history.sort((a, b) =>
