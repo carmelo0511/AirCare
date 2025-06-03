@@ -26,6 +26,7 @@ describe('handler /geo/direct', () => {
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.body)).toEqual([{ name: 'London' }]);
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('lang=en'), expect.objectContaining({ headers: { 'Accept-Language': 'en' } }));
   });
 
   test('returns error when q parameter missing', async () => {
@@ -70,6 +71,7 @@ describe('handler /geo/reverse', () => {
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.body)).toEqual([{ name: 'Paris' }]);
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('lang=en'), expect.objectContaining({ headers: { 'Accept-Language': 'en' } }));
   });
 
   test('returns error when lat or lon missing', async () => {
@@ -103,6 +105,8 @@ describe('handler /air', () => {
     const body = JSON.parse(res.body);
     expect(body.aqi).toBe(2);
     expect(mockSend).toHaveBeenCalled();
+    expect(global.fetch).toHaveBeenNthCalledWith(1, expect.stringContaining('lang=en'), expect.objectContaining({ headers: { 'Accept-Language': 'en' } }));
+    expect(global.fetch).toHaveBeenNthCalledWith(2, expect.stringContaining('lang=en'), expect.objectContaining({ headers: { 'Accept-Language': 'en' } }));
   });
 
   test('returns error when required parameters missing', async () => {
