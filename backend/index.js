@@ -158,8 +158,10 @@ exports.handler = async (event) => {
             ScanIndexForward: true // Ascending order (oldest to newest)
           })
         );
-        items = result.Items;
-        console.log(`📚 Found ${items.length} items for location=${location}`);
+        items = result.Items || [];
+        console.log(
+          `📚 Found ${items.length} items for location=${location}`
+        );
       } catch (queryErr) {
         console.error("❌ DynamoDB Query error:", queryErr);
         throw new Error("DynamoDB history read failed: " + queryErr.message);
