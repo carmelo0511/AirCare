@@ -147,7 +147,7 @@ exports.handler = async (event) => {
         const result = await ddb.send(
           new QueryCommand({
             TableName: TABLE_NAME,
-            // Use alias (#loc) because "location" is a reserved keyword
+            // Use alias (#loc) to avoid attribute name conflicts; 'location' isn't reserved
             KeyConditionExpression: "#loc = :locValue",
             ExpressionAttributeNames: {
               "#loc": "location"
