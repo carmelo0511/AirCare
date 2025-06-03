@@ -53,7 +53,9 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(q)}` +
         `&limit=${limit || 5}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Direct URL:", apiUrl);
-      const openRes = await fetch(apiUrl);
+      const openRes = await fetch(apiUrl, {
+        headers: { 'Accept-Language': 'en' }
+      });
       if (!openRes.ok) throw new Error(openRes.statusText);
       responseBody = await openRes.json();
     }
@@ -66,7 +68,9 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}` +
         `&limit=${limit || 1}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Geo Reverse URL:", apiUrl);
-      const openRes = await fetch(apiUrl);
+      const openRes = await fetch(apiUrl, {
+        headers: { 'Accept-Language': 'en' }
+      });
       if (!openRes.ok) throw new Error(openRes.statusText);
       responseBody = await openRes.json();
     }
@@ -80,7 +84,8 @@ exports.handler = async (event) => {
       if (city) {
         console.log("📍 Looking up city:", city);
         const geoRes = await fetch(
-          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&lang=en&appid=${APIKEY}`
+          `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&lang=en&appid=${APIKEY}`,
+          { headers: { 'Accept-Language': 'en' } }
         );
         if (!geoRes.ok) throw new Error(geoRes.statusText);
         const geoData = await geoRes.json();
@@ -103,7 +108,9 @@ exports.handler = async (event) => {
         `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&lang=en&appid=${APIKEY}`;
       console.log("🌐 Air Pollution URL:", apiUrl);
 
-      const openRes = await fetch(apiUrl);
+      const openRes = await fetch(apiUrl, {
+        headers: { 'Accept-Language': 'en' }
+      });
       if (!openRes.ok) throw new Error(openRes.statusText);
       const aqiPayload = await openRes.json();
       console.log("✅ OpenWeather response:", aqiPayload);
