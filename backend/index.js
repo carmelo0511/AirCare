@@ -93,10 +93,10 @@ exports.handler = async (event) => {
         longitude = lon;
       }
 
-      // Normalize coordinates to 3 decimal places so repeated geolocation
-      // queries map to the same DynamoDB partition key
-      latitude = Number(parseFloat(latitude).toFixed(3));
-      longitude = Number(parseFloat(longitude).toFixed(3));
+      // Normalize coordinates to 2 decimal places so repeated geolocation
+      // queries map to the same DynamoDB partition key even with GPS drift
+      latitude = Number(parseFloat(latitude).toFixed(2));
+      longitude = Number(parseFloat(longitude).toFixed(2));
 
       // Call OpenWeather Air Pollution API
       const apiUrl =
@@ -176,7 +176,8 @@ exports.handler = async (event) => {
             ExpressionAttributeValues: {
               ":locValue": location
             },
-            ScanIndexForward: true // Ascending order (oldest to newest)
+            ScanIndexForward: true, // Ascending order (oldest to newest)
+            ConsistentRead: true
           })
         );
         items = result.Items || [];
