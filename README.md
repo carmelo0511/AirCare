@@ -122,7 +122,19 @@ AirCare/
 ├── backend/ # Lambda source code  
 ├── frontend/ # HTML/CSS/JavaScript  
 ├── .github/workflows/ # CI/CD with GitHub Actions  
-├── README.md # This file  
+├── README.md # This file
+
+---
+
+## Development
+
+1. Install **Node.js 18** or newer.
+2. Navigate to the `backend/` folder and run `npm install` to install dependencies.
+3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable, e.g.
+   ```bash
+   export OPENWEATHER_APIKEY=your_api_key
+   ```
+4. Execute the test suite with `npm test`.
 
 ---
 
