@@ -151,6 +151,19 @@ AirCare/
    ```bash
    export TABLE_NAME=AirCareHistoryAQI
    ```
+
+### Install dependencies before running tests
+
+Make sure all Node.js dependencies are installed in the `backend/` folder:
+
+```bash
+cd backend
+npm install
+```
+
+For CI environments, include `npm ci` in your setup script so tests run with the
+correct dependencies.
+
 5. Run the backend test suite to ensure everything works:
    ```bash
    npm test
