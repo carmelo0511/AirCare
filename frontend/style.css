@@ -8,6 +8,11 @@
   animation: spin 1s linear infinite; /* Infinite rotation animation */
 }
 
+.dark .loader {
+  border-color: #4b5563;             /* Darker ring in dark mode */
+  border-top-color: #a5b4fc;         /* Softer indigo spin */
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }   /* Full circle rotation */
 }
@@ -19,6 +24,12 @@
   box-shadow: 0 4px 16px 0 #0001;     /* Soft drop shadow for floating effect */
 }
 
+.dark #citySuggestions {
+  background: #374151;                /* Gray background in dark mode */
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
 #citySuggestions li {
   padding: 0.5rem 1rem;               /* Spacing for each suggestion */
   cursor: pointer;                    /* Pointer cursor on hover */
@@ -28,6 +39,11 @@
 #citySuggestions li:hover,
 #citySuggestions .active {
   background: #eef2ff;                /* Highlight on hover or active */
+}
+
+.dark #citySuggestions li:hover,
+.dark #citySuggestions .active {
+  background: #4b5563;
 }
 
 /* Smooth fade-in for result and history sections */
