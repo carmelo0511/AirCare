@@ -142,46 +142,40 @@ AirCare/
    cd AirCare/backend
    npm install
    ```
-3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable:
+3. Review `.env.example` for the required environment variables. You can copy it
+   to `.env` and edit the values.
+4. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable:
    ```bash
    export OPENWEATHER_APIKEY=your_api_key
    ```
-4. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
+5. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
    If not set, it defaults to **AirCareHistoryAQI**:
    ```bash
    export TABLE_NAME=AirCareHistoryAQI
    ```
-
-### Install dependencies before running tests
-
-Make sure all Node.js dependencies are installed in the `backend/` folder:
-
-```bash
-cd backend
-npm install
-```
-
-For CI environments, include `npm ci` in your setup script so tests run with the
-correct dependencies.
-
-5. Run the backend test suite to ensure everything works:
+6. Run the backend test suite to ensure everything works:
    ```bash
    npm test
    ```
-6. Serve the frontend locally from the project root:
+7. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
    ```
-   Then open `http://localhost:8080` in your browser. To point the frontend to a
-   different API Gateway, update the `API_BASE_URL` value in
-   `frontend/config.js`. No application code changes are required.
+   Then open `http://localhost:8080` in your browser.
+   The file `frontend/config.js` contains a placeholder string `__API_BASE_URL__`.
+   Before running locally (or during CI deploys), replace this placeholder with
+   your endpoint by setting the `API_BASE_URL` environment variable and
+   running `envsubst` or `sed`.
+   No application code changes are required.
 
 ### Changing the API endpoint
 
-The `frontend/config.js` file contains the `API_BASE_URL` constant used by the
-frontend. Update this value if you deploy your own backend or API Gateway
-endpoint. Because the frontend imports the value at runtime, you don't need to
-modify any JavaScript logic.
+`frontend/config.js` exports a placeholder string `__API_BASE_URL__`. During
+deployment (or before local testing) replace this placeholder with the URL of
+your API Gateway. The recommended approach is to set an `API_BASE_URL`
+environment variable and run `envsubst < frontend/config.js > frontend/config.js`
+or an equivalent `sed` command. The frontend reads the updated value at runtime,
+so you never need to modify the application code.
 
 ---
 
