@@ -1,7 +1,9 @@
 // === AirCare Frontend Main Script ===
 
-// API base URL (pointing to the deployed AWS API Gateway endpoint)
-const apiBaseUrl = "https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod";
+// API base URL is provided by config.js so deployments can change the
+// backend endpoint without modifying this file.
+import { API_BASE_URL } from './config.js';
+const apiBaseUrl = API_BASE_URL;
 
 // --- DOM elements ---
 const fetchBtn = document.getElementById('fetchBtn');
