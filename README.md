@@ -133,13 +133,30 @@ AirCare/
 
 ## Development
 
+### Local setup
+
 1. Install **Node.js 18** or newer.
-2. Navigate to the `backend/` folder and run `npm install` to install dependencies.
-3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable, e.g.
+2. Clone this repository and install the backend dependencies:
+   ```bash
+   git clone https://github.com/carmelo0511/AirCare.git
+   cd AirCare/backend
+   npm install
+   ```
+3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable:
    ```bash
    export OPENWEATHER_APIKEY=your_api_key
    ```
-4. Execute the test suite with `npm test`.
+4. Run the backend test suite to ensure everything works:
+   ```bash
+   npm test
+   ```
+5. Serve the frontend locally from the project root:
+   ```bash
+   npx http-server frontend -c-1
+   ```
+   Then open `http://localhost:8080` in your browser. You can edit
+   `frontend/app.js` to point `apiBaseUrl` to your own API Gateway endpoint
+   if needed.
 
 ---
 
