@@ -155,20 +155,23 @@ AirCare/
    ```bash
    npm test
    ```
-6. Serve the frontend locally from the project root:
+6. Set the API endpoint for the frontend:
+   ```bash
+   API_BASE_URL=https://your-api-endpoint node scripts/set-api-url.js
+   ```
+7. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
    ```
-   Then open `http://localhost:8080` in your browser. To point the frontend to a
-   different API Gateway, update the `API_BASE_URL` value in
-   `frontend/config.js`. No application code changes are required.
-
+   Then open `http://localhost:8080` in your browser. The generated
+   `frontend/config.js` now points the app to the correct backend.
 ### Changing the API endpoint
 
-The `frontend/config.js` file contains the `API_BASE_URL` constant used by the
-frontend. Update this value if you deploy your own backend or API Gateway
-endpoint. Because the frontend imports the value at runtime, you don't need to
-modify any JavaScript logic.
+If you deploy your own backend or API Gateway, set the `API_BASE_URL` environment variable and run:
+```bash
+node scripts/set-api-url.js
+```
+This regenerates `frontend/config.js` with your endpoint. Because the frontend imports this value at runtime, no application code changes are required.
 
 ---
 
