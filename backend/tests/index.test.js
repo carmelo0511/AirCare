@@ -118,6 +118,40 @@ describe('handler /air', () => {
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/Missing 'city' or 'lat'\+'lon'/);
   });
+
+  test('returns AQI data when lat and lon provided', async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        list: [{ main: { aqi: 3 }, components: { pm2_5: 4, pm10: 8 } }]
+      })
+    });
+
+    const event = { resource: '/air', queryStringParameters: { lat: '1', lon: '2' } };
+    const res = await handler(event);
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.aqi).toBe(3);
+    expect(mockSend).toHaveBeenCalled();
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('lang=en'),
+      expect.objectContaining({ headers: { 'Accept-Language': 'en' } })
+    );
+  });
+
+  test('returns error when DynamoDB write fails', async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValue({
+        list: [{ main: { aqi: 2 }, components: { pm2_5: 5, pm10: 10 } }]
+      })
+    });
+    mockSend.mockRejectedValueOnce(new Error('boom'));
+    const event = { resource: '/air', queryStringParameters: { lat: '3', lon: '4' } };
+    const res = await handler(event);
+    expect(res.statusCode).toBe(400);
+    expect(JSON.parse(res.body).error).toMatch(/DynamoDB write failed/);
+  });
 });
 
 describe('handler /history', () => {
@@ -156,5 +190,13 @@ describe('handler /history', () => {
     const res = await handler(event);
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/Missing 'location' parameter/);
+  });
+
+  test('returns error when DynamoDB query fails', async () => {
+    mockSend.mockRejectedValueOnce(new Error('query err'));
+    const event = { resource: '/history', queryStringParameters: { location: '1,2' } };
+    const res = await handler(event);
+    expect(res.statusCode).toBe(400);
+    expect(JSON.parse(res.body).error).toMatch(/DynamoDB history read failed/);
   });
 });
