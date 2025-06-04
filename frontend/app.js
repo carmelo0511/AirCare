@@ -23,11 +23,11 @@ let debounceTimeout = null;
 
 // AQI Mapping: associates each AQI level (1-5) to a label, color, emoji, and health advice.
 const AQI_MAP = [
-  { label: "Very good", color: "text-green-600", emoji: "🟢", advice: "Clean air, enjoy!" },
-  { label: "Good", color: "text-green-500", emoji: "😊", advice: "No issues for asthmatics." },
-  { label: "Moderate", color: "text-yellow-600", emoji: "😐", advice: "Avoid prolonged exertion if sensitive." },
-  { label: "Poor", color: "text-orange-600", emoji: "😷", advice: "Limit outings and watch for symptoms." },
-  { label: "Very poor", color: "text-red-600", emoji: "🚨", advice: "Stay indoors and follow your treatment!" }
+  { label: "Très bonne", color: "text-green-600", emoji: "🟢", advice: "Air pur, profitez !" },
+  { label: "Bonne", color: "text-green-500", emoji: "😊", advice: "Rien à signaler pour les asthmatiques." },
+  { label: "Modérée", color: "text-yellow-600", emoji: "😐", advice: "Évitez l'effort prolongé si sensible." },
+  { label: "Mauvaise", color: "text-orange-600", emoji: "😷", advice: "Limitez vos sorties, surveillez vos symptômes." },
+  { label: "Très mauvaise", color: "text-red-600", emoji: "🚨", advice: "Restez à l'intérieur et suivez votre traitement !" }
 ];
 
 // --- UI helper functions ---
@@ -67,12 +67,10 @@ cityInput.addEventListener('input', () => {
       const data = await res.json();
       if (!data.length) return;
 
-      // Renders suggestions using the English name when available
-      citySuggestions.innerHTML = data.map(city => {
-        const name = city.local_names && city.local_names.en ? city.local_names.en : city.name;
-        const state = city.state ? `, ${city.state}` : '';
-        return `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${name}${state}, ${city.country}</li>`;
-      }).join('');
+      // Renders suggestions as clickable <li> elements
+      citySuggestions.innerHTML = data.map(city =>
+        `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${city.name}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`
+      ).join('');
       citySuggestions.classList.remove('hidden');
 
       // Click on a suggestion fills the input and hides the dropdown
@@ -83,7 +81,7 @@ cityInput.addEventListener('input', () => {
         });
       });
     } catch (err) {
-      showError("Error: unable to load suggestions");
+      showError("Erreur : chargement impossible");
     }
   }, 200); // Debounce delay for API requests
 });
@@ -102,11 +100,10 @@ async function getCityNameFromCoords(lat, lon) {
     const res = await fetch(`${apiBaseUrl}/geo/reverse?lat=${lat}&lon=${lon}&limit=1`);
     const data = await res.json();
     if (data && data[0]) {
-      const name = data[0].local_names && data[0].local_names.en ? data[0].local_names.en : data[0].name;
-      return `${name}, ${data[0].country}`;
+      return `${data[0].name}, ${data[0].country}`;
     }
   } catch (e) { }
-  return `Coordinates: ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+  return `Coordonnées : ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
 }
 
 // --- Fetch AQI and History for Coordinates ---
@@ -130,15 +127,15 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     // 2. Fetch AQI data from backend /air endpoint
     const airRes = await fetch(`${apiBaseUrl}/air?lat=${roundedLat}&lon=${roundedLon}`);
     const airData = await airRes.json();
-    if (!airData || airData.error) throw new Error(airData.error || "AQI data unavailable");
+    if (!airData || airData.error) throw new Error(airData.error || "Donnée AQI indisponible");
     const aqi = airData.aqi;
     const info = AQI_MAP[aqi - 1];
 
     // 3. Update UI with AQI and advice
     locationDisplay.textContent = cityLabel;
-    qualityDisplay.textContent = `Air quality: ${info.label}`;
+    qualityDisplay.textContent = `Qualité de l'air : ${info.label}`;
     qualityDisplay.className = `text-lg font-semibold ${info.color}`;
-    recommendation.innerHTML = `<b>Advice:</b> ${info.advice}`;
+    recommendation.innerHTML = `<b>Conseil :</b> ${info.advice}`;
     emojiDisplay.textContent = info.emoji;
     showResult(true);
 
@@ -151,7 +148,7 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
       );
       sorted.slice(0, 5).forEach(item => {
         const date = new Date(item.timestamp);
-        const dateStr = date.toLocaleString("en-US");
+        const dateStr = date.toLocaleString("fr-FR");
         const li = document.createElement("li");
         li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})`;
         historyList.appendChild(li);
@@ -159,12 +156,12 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
       showHistory(true);
     } else {
       const li = document.createElement("li");
-      li.textContent = "No history available for this location.";
+      li.textContent = "Aucun historique disponible pour cet endroit.";
       historyList.appendChild(li);
       showHistory(true);
     }
   } catch (err) {
-    showError("Error: " + err.message);
+    showError("Erreur : " + err.message);
     showResult(false);
     showHistory(false);
   } finally {
@@ -184,13 +181,12 @@ async function fetchAirByCity(city) {
     // Fetch coordinates for the provided city name using /geo/direct
     const geoRes = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`);
     const geoData = await geoRes.json();
-    if (!geoData.length) throw new Error("City not found.");
-    const { lat, lon, name, country, local_names } = geoData[0];
-    const englishName = local_names && local_names.en ? local_names.en : name;
+    if (!geoData.length) throw new Error("Ville introuvable.");
+    const { lat, lon, name, country } = geoData[0];
     // Fetch AQI and history for those coordinates
-    await fetchAirAndHistory(lat, lon, `${englishName}, ${country}`);
+    await fetchAirAndHistory(lat, lon, `${name}, ${country}`);
   } catch (err) {
-    showError("Error: " + err.message);
+    showError("Erreur : " + err.message);
     showResult(false);
     showHistory(false);
     showLoader(false);
@@ -208,7 +204,7 @@ fetchBtn.addEventListener('click', () => {
 // Geolocation button: gets user's coordinates and fetches AQI/history for that location
 geoBtn.addEventListener('click', () => {
   if (!navigator.geolocation) {
-    showError("Geolocation is not supported by this browser.");
+    showError("Géolocalisation non supportée sur ce navigateur.");
     return;
   }
   navigator.geolocation.getCurrentPosition(
@@ -216,7 +212,7 @@ geoBtn.addEventListener('click', () => {
       fetchAirAndHistory(pos.coords.latitude, pos.coords.longitude);
     },
     err => {
-      showError("Please allow geolocation to use this feature.");
+      showError("Autorise la géolocalisation pour utiliser cette fonction.");
     }
   );
 });
