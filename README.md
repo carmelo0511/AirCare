@@ -125,7 +125,7 @@ AirCare/
 ├── assets1/ # Images & diagrams  
 │   └── diagramme.png  
 ├── backend/ # Lambda source code  
-├── frontend/ # HTML/CSS/JavaScript  
+├── frontend/ # HTML/CSS/JavaScript (app.js, config.js, index.html)
 ├── .github/workflows/ # CI/CD with GitHub Actions  
 ├── README.md # This file
 
@@ -154,9 +154,16 @@ AirCare/
    ```bash
    npx http-server frontend -c-1
    ```
-   Then open `http://localhost:8080` in your browser. You can edit
-   `frontend/app.js` to point `apiBaseUrl` to your own API Gateway endpoint
-   if needed.
+   Then open `http://localhost:8080` in your browser. To point the frontend to a
+   different API Gateway, update the `API_BASE_URL` value in
+   `frontend/config.js`. No application code changes are required.
+
+### Changing the API endpoint
+
+The `frontend/config.js` file contains the `API_BASE_URL` constant used by the
+frontend. Update this value if you deploy your own backend or API Gateway
+endpoint. Because the frontend imports the value at runtime, you don't need to
+modify any JavaScript logic.
 
 ---
 
