@@ -146,11 +146,16 @@ AirCare/
    ```bash
    export OPENWEATHER_APIKEY=your_api_key
    ```
-4. Run the backend test suite to ensure everything works:
+4. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
+   If not set, it defaults to **AirCareHistoryAQI**:
+   ```bash
+   export TABLE_NAME=AirCareHistoryAQI
+   ```
+5. Run the backend test suite to ensure everything works:
    ```bash
    npm test
    ```
-5. Serve the frontend locally from the project root:
+6. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
    ```
