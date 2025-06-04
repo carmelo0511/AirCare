@@ -33,6 +33,47 @@ const AQI_MAP = [
   { label: "Very poor", color: "text-red-600", emoji: "🚨", advice: "Stay indoors and follow your treatment!" }
 ];
 
+// --- Data helpers ---
+const roundCoord = (v) => Number(parseFloat(v).toFixed(2));
+
+async function fetchAirData(lat, lon) {
+  const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
+  return res.json();
+}
+
+async function fetchHistoryData(lat, lon) {
+  const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}`);
+  return res.json();
+}
+
+function renderAirInfo(cityLabel, aqi) {
+  const info = AQI_MAP[aqi - 1];
+  locationDisplay.textContent = cityLabel;
+  qualityDisplay.textContent = `Air quality: ${info.label}`;
+  qualityDisplay.className = `text-lg font-semibold ${info.color}`;
+  recommendation.innerHTML = `<b>Advice:</b> ${info.advice}`;
+  emojiDisplay.textContent = info.emoji;
+  showResult(true);
+}
+
+function renderHistory(history) {
+  historyList.innerHTML = "";
+  if (history && history.length) {
+    const sorted = history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    sorted.slice(0, 5).forEach(item => {
+      const date = new Date(item.timestamp);
+      const li = document.createElement("li");
+      li.textContent = `${date.toLocaleString('en-US')} → AQI ${item.aqi} (${item.advice})`;
+      historyList.appendChild(li);
+    });
+  } else {
+    const li = document.createElement("li");
+    li.textContent = "No history available for this location.";
+    historyList.appendChild(li);
+  }
+  showHistory(true);
+}
+
 // --- UI helper functions ---
 
 // Shows or hides the loader spinner
@@ -153,46 +194,16 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     if (!cityLabel) {
       cityLabel = await getCityNameFromCoords(lat, lon);
     }
-    
-    const roundedLat = Number(parseFloat(lat).toFixed(2));
-    const roundedLon = Number(parseFloat(lon).toFixed(2));
 
-    // 2. Fetch AQI data from backend /air endpoint
-    const airRes = await fetch(`${apiBaseUrl}/air?lat=${roundedLat}&lon=${roundedLon}`);
-    const airData = await airRes.json();
+    const roundedLat = roundCoord(lat);
+    const roundedLon = roundCoord(lon);
+
+    const airData = await fetchAirData(roundedLat, roundedLon);
     if (!airData || airData.error) throw new Error(airData.error || "AQI data unavailable");
-    const aqi = airData.aqi;
-    const info = AQI_MAP[aqi - 1];
+    renderAirInfo(cityLabel, airData.aqi);
 
-    // 3. Update UI with AQI and advice
-    locationDisplay.textContent = cityLabel;
-    qualityDisplay.textContent = `Air quality: ${info.label}`;
-    qualityDisplay.className = `text-lg font-semibold ${info.color}`;
-    recommendation.innerHTML = `<b>Advice:</b> ${info.advice}`;
-    emojiDisplay.textContent = info.emoji;
-    showResult(true);
-
-    // 4. Fetch AQI history from backend /history endpoint (last 5 entries)
-    const histRes = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(roundedLat + "," + roundedLon)}`);
-    const histData = await histRes.json();
-    if (histData.history && histData.history.length) {
-      const sorted = histData.history.sort((a, b) =>
-        new Date(b.timestamp) - new Date(a.timestamp)
-      );
-      sorted.slice(0, 5).forEach(item => {
-        const date = new Date(item.timestamp);
-        const dateStr = date.toLocaleString("en-US");
-        const li = document.createElement("li");
-        li.textContent = `${dateStr} → AQI ${item.aqi} (${item.advice})`;
-        historyList.appendChild(li);
-      });
-      showHistory(true);
-    } else {
-      const li = document.createElement("li");
-      li.textContent = "No history available for this location.";
-      historyList.appendChild(li);
-      showHistory(true);
-    }
+    const histData = await fetchHistoryData(roundedLat, roundedLon);
+    renderHistory(histData.history);
   } catch (err) {
     showError("Error: " + err.message);
     showResult(false);
