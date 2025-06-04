@@ -9,13 +9,16 @@
   <!-- Optionally add your own custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center text-gray-800 font-sans transition-all duration-700 px-2">
+<body class="bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 min-h-screen flex flex-col items-center justify-center text-gray-800 dark:text-gray-200 font-sans transition-all duration-700 px-2">
   <!-- Main container for the app -->
-  <div class="w-full max-w-md md:max-w-lg p-6 bg-white shadow-2xl rounded-2xl relative mx-auto">
-    <!-- Application title with emoji -->
-    <h1 class="text-3xl font-bold text-center mb-4 flex items-center justify-center gap-2">
-      <span>🌿</span> AirCare
-    </h1>
+  <div class="w-full max-w-md md:max-w-lg p-6 bg-white dark:bg-gray-700 shadow-2xl rounded-2xl relative mx-auto">
+    <!-- Header with title and dark mode toggle -->
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-3xl font-bold flex items-center gap-2">
+        <span>🌿</span> AirCare
+      </h1>
+      <button id="themeToggle" class="text-2xl" aria-label="Toggle dark mode">🌙</button>
+    </div>
 
     <!-- City selection and geolocation controls -->
     <div class="mb-4 flex flex-col gap-2 relative">
