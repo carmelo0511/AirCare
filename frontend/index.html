@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AirCare - Air Quality</title>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
   <!-- Import Tailwind CSS from CDN and enable class-based dark mode -->
   <script>
     tailwind.config = { darkMode: 'class' };
@@ -51,7 +57,7 @@
     </div>
 
     <!-- Error message display, hidden by default -->
-    <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 text-center font-medium"></div>
+      <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 text-center font-medium"></div>
 
     <!-- AQI result panel, hidden by default -->
     <div id="result" class="mt-4 hidden transition-all duration-700">
@@ -70,7 +76,7 @@
     <!-- AQI History Section: recent measurements -->
     <div id="historySection" class="mt-6 hidden transition-all duration-700">
       <h3 class="text-lg font-semibold mb-2">AQI History</h3>
-      <ul id="historyList" class="list-disc list-inside text-sm text-gray-700"></ul>
+      <ul id="historyList" class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300"></ul>
     </div>
   </div>
   <!-- Main JavaScript file for frontend logic -->
