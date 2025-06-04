@@ -19,6 +19,7 @@ const recommendation = document.getElementById('recommendation');
 const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
+const themeToggle = document.getElementById('themeToggle');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -52,6 +53,33 @@ function showHistory(show) {
   historySection.classList.toggle('hidden', !show);
 }
 
+// --- Theme toggle ---
+function applyTheme(mode) {
+  document.documentElement.classList.toggle('dark', mode === 'dark');
+  themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
+}
+
+function setTheme(mode) {
+  applyTheme(mode);
+  localStorage.setItem('theme', mode);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    applyTheme(saved);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme('dark');
+  }
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
+  });
+  initTheme();
+}
 
 // --- City Autocomplete Logic ---
 
