@@ -29,3 +29,9 @@
 #citySuggestions .active {
   background: #eef2ff;                /* Highlight on hover or active */
 }
+
+/* Smooth fade-in for result and history sections */
+#result,
+#historySection {
+  transition: opacity 0.3s ease;
+}
