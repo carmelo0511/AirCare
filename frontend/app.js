@@ -19,6 +19,7 @@ const recommendation = document.getElementById('recommendation');
 const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
+const themeToggle = document.getElementById('themeToggle');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -50,6 +51,27 @@ function showError(msg = "") {
 // Shows or hides the AQI history section
 function showHistory(show) {
   historySection.classList.toggle('hidden', !show);
+}
+
+// --- Theme toggle ---
+function setTheme(mode) {
+  if (mode === 'dark') {
+    document.documentElement.classList.add('dark');
+    themeToggle.textContent = '☀️';
+  } else {
+    document.documentElement.classList.remove('dark');
+    themeToggle.textContent = '🌙';
+  }
+  localStorage.setItem('theme', mode);
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
+  });
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') setTheme('dark');
 }
 
 // --- City Autocomplete Logic ---
