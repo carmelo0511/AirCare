@@ -5,10 +5,14 @@
   "scripts": {
     "test": "jest"
   },
+  "description": "AirCare AWS Lambda function",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carmelo0511/AirCare.git"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Bryan Nakache",
   "license": "MIT",
-  "description": "",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.821.0",
     "@aws-sdk/lib-dynamodb": "^3.821.0"
