@@ -54,15 +54,23 @@ function showHistory(show) {
 }
 
 // --- Theme toggle ---
+function applyTheme(mode) {
+  document.documentElement.classList.toggle('dark', mode === 'dark');
+  themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
+}
+
 function setTheme(mode) {
-  if (mode === 'dark') {
-    document.documentElement.classList.add('dark');
-    themeToggle.textContent = '☀️';
-  } else {
-    document.documentElement.classList.remove('dark');
-    themeToggle.textContent = '🌙';
-  }
+  applyTheme(mode);
   localStorage.setItem('theme', mode);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    applyTheme(saved);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme('dark');
+  }
 }
 
 if (themeToggle) {
@@ -70,8 +78,7 @@ if (themeToggle) {
     const isDark = document.documentElement.classList.contains('dark');
     setTheme(isDark ? 'light' : 'dark');
   });
-  const saved = localStorage.getItem('theme');
-  if (saved === 'dark') setTheme('dark');
+  initTheme();
 }
 
 // --- City Autocomplete Logic ---
