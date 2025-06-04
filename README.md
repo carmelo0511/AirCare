@@ -142,20 +142,22 @@ AirCare/
    cd AirCare/backend
    npm install
    ```
-3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable:
+3. Review `.env.example` for the required environment variables. You can copy it
+   to `.env` and edit the values.
+4. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable:
    ```bash
    export OPENWEATHER_APIKEY=your_api_key
    ```
-4. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
+5. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
    If not set, it defaults to **AirCareHistoryAQI**:
    ```bash
    export TABLE_NAME=AirCareHistoryAQI
    ```
-5. Run the backend test suite to ensure everything works:
+6. Run the backend test suite to ensure everything works:
    ```bash
    npm test
    ```
-6. Serve the frontend locally from the project root:
+7. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
    ```
