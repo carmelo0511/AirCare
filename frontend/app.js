@@ -69,20 +69,20 @@ cityInput.addEventListener('input', () => {
       const data = await res.json();
       if (!data.length) return;
 
-      // Renders suggestions as clickable <li> elements
-      citySuggestions.innerHTML = data.map(city => {
+      // Render suggestions as <li> elements and add click handlers safely
+      citySuggestions.innerHTML = '';
+      data.forEach(city => {
         const label = city.local_names && city.local_names.en ? city.local_names.en : city.name;
-        return `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${label}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`;
-      }).join('');
-      citySuggestions.classList.remove('hidden');
-
-      // Click on a suggestion fills the input and hides the dropdown
-      Array.from(citySuggestions.children).forEach((li) => {
+        const li = document.createElement('li');
+        li.className = 'p-2 hover:bg-indigo-100 cursor-pointer';
+        li.textContent = `${label}${city.state ? ', ' + city.state : ''}, ${city.country}`;
         li.addEventListener('click', () => {
           cityInput.value = li.textContent;
           citySuggestions.classList.add('hidden');
         });
+        citySuggestions.appendChild(li);
       });
+      citySuggestions.classList.remove('hidden');
     } catch (err) {
       showError("Error: could not load");
     }
