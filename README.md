@@ -159,21 +159,16 @@ AirCare/
    ```bash
    npx http-server frontend -c-1
    ```
-   Then open `http://localhost:8080` in your browser.
-   The file `frontend/config.js` contains a placeholder string `__API_BASE_URL__`.
-   Before running locally (or during CI deploys), replace this placeholder with
-   your endpoint by setting the `API_BASE_URL` environment variable and
-   running `envsubst` or `sed`.
-   No application code changes are required.
+   Then open `http://localhost:8080` in your browser. To point the frontend to a
+   different API Gateway, update the `API_BASE_URL` value in
+   `frontend/config.js`. No application code changes are required.
 
 ### Changing the API endpoint
 
-`frontend/config.js` exports a placeholder string `__API_BASE_URL__`. During
-deployment (or before local testing) replace this placeholder with the URL of
-your API Gateway. The recommended approach is to set an `API_BASE_URL`
-environment variable and run `envsubst < frontend/config.js > frontend/config.js`
-or an equivalent `sed` command. The frontend reads the updated value at runtime,
-so you never need to modify the application code.
+The `frontend/config.js` file contains the `API_BASE_URL` constant used by the
+frontend. Update this value if you deploy your own backend or API Gateway
+endpoint. Because the frontend imports the value at runtime, you don't need to
+modify any JavaScript logic.
 
 ---
 
