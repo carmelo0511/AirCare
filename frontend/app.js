@@ -142,7 +142,7 @@ cityInput.addEventListener('input', () => {
       // Renders suggestions as clickable <li> elements
       citySuggestions.innerHTML = data.map(city => {
         const label = city.local_names && city.local_names.en ? city.local_names.en : city.name;
-        return `<li class="p-2 hover:bg-indigo-100 cursor-pointer">${label}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`;
+        return `<li class="p-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-gray-600">${label}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`;
       }).join('');
       citySuggestions.classList.remove('hidden');
 
