@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
   <title>AirCare - Air Quality</title>
   <script>
     const savedTheme = localStorage.getItem('theme');
@@ -29,7 +30,7 @@
       <h1 class="text-3xl font-bold flex items-center gap-2">
         <span>🌿</span> AirCare
       </h1>
-      <button id="themeToggle" class="text-2xl" aria-label="Toggle dark mode">🌙</button>
+      <button id="themeToggle" class="text-2xl transition-colors" aria-label="Toggle dark mode">🌙</button>
     </div>
 
     <!-- City selection and geolocation controls -->
@@ -37,10 +38,10 @@
       <label for="cityInput" class="block font-medium">Choose a city:</label>
       <!-- Input for manual city search with autocomplete -->
       <input type="text" id="cityInput" placeholder="e.g., London"
-        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all"
+        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-300"
         autocomplete="off" />
       <!-- Autocomplete dropdown suggestions (hidden by default) -->
-      <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden"></ul>
+      <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden dark:bg-gray-700 dark:border-gray-600"></ul>
 
       <!-- Buttons: Search by city or use geolocation -->
       <div class="flex gap-2 mt-2">
