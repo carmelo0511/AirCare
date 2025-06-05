@@ -93,6 +93,7 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
 - 📄 Shows a message when no history is available
 - 🔐 Secure server-side OpenWeather API access
 - 🌐 Clean UI/UX with Tailwind CSS
+- 🔑 User authentication powered by Amazon Cognito
 
 ---
 
@@ -199,7 +200,6 @@ This regenerates `frontend/config.js` with your endpoint. Because the frontend i
 ## 🚧 Upcoming Improvements
 
 - 📊 Build a **QuickSight Dashboard** for AQI trends (from DynamoDB)
-- ✅ Integrate **Amazon Cognito** for user authentication
 - 📜 Implement API Gateway **usage plans and throttling**
 
 ---
