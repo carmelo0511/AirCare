@@ -107,10 +107,16 @@ function setTheme(mode) {
 
 function initTheme() {
   const saved = localStorage.getItem('theme');
-  if (saved) {
+  if (saved === 'light' || saved === 'dark') {
     applyTheme(saved);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    applyTheme('dark');
+  } else {
+    const system = window.matchMedia('(prefers-color-scheme: dark)');
+    applyTheme(system.matches ? 'dark' : 'light');
+    system.addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
   }
 }
 
