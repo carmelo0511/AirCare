@@ -100,18 +100,34 @@ function applyTheme(mode) {
   themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
 }
 
+function setCookie(name, value, days) {
+  document.cookie = `${name}=${value}; path=/; max-age=${days * 86400}`;
+}
+
+function getCookie(name) {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return m ? m[1] : null;
+}
+
 function setTheme(mode) {
   applyTheme(mode);
   try {
     localStorage.setItem('theme', mode);
-  } catch (_) {}
+  } catch (_) {
+    setCookie('theme', mode, 365);
+  }
 }
 
 function initTheme() {
   let saved = null;
   try {
     saved = localStorage.getItem('theme');
-  } catch (_) {}
+  } catch (_) {
+    saved = getCookie('theme');
+  }
+  if (!saved) {
+    saved = getCookie('theme');
+  }
   if (saved === 'light' || saved === 'dark') {
     applyTheme(saved);
   } else {
@@ -119,11 +135,13 @@ function initTheme() {
     applyTheme(system.matches ? 'dark' : 'light');
     system.addEventListener('change', (e) => {
       try {
-        if (!localStorage.getItem('theme')) {
+        if (!localStorage.getItem('theme') && !getCookie('theme')) {
           applyTheme(e.matches ? 'dark' : 'light');
         }
       } catch (_) {
-        applyTheme(e.matches ? 'dark' : 'light');
+        if (!getCookie('theme')) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
       }
     });
   }
