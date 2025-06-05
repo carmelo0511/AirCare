@@ -167,6 +167,11 @@ AirCare/
    COGNITO_DOMAIN=your-domain.auth.region.amazoncognito.com \
    node scripts/set-cognito-config.js
    ```
+   Make sure the **Cognito domain** and callback URLs are correctly configured
+   in the AWS console. If they don't match your site URL, the Hosted UI shows
+   “Something went wrong. An error was encountered with the requested page.”
+   After adjusting the domain or URLs, rerun the script above to regenerate
+   `frontend/cognito-config.js`.
 8. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
