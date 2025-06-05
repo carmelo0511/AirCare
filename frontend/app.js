@@ -102,18 +102,27 @@ function applyTheme(mode) {
 
 function setTheme(mode) {
   applyTheme(mode);
-  localStorage.setItem('theme', mode);
+  try {
+    localStorage.setItem('theme', mode);
+  } catch (_) {}
 }
 
 function initTheme() {
-  const saved = localStorage.getItem('theme');
+  let saved = null;
+  try {
+    saved = localStorage.getItem('theme');
+  } catch (_) {}
   if (saved === 'light' || saved === 'dark') {
     applyTheme(saved);
   } else {
     const system = window.matchMedia('(prefers-color-scheme: dark)');
     applyTheme(system.matches ? 'dark' : 'light');
     system.addEventListener('change', (e) => {
-      if (!localStorage.getItem('theme')) {
+      try {
+        if (!localStorage.getItem('theme')) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      } catch (_) {
         applyTheme(e.matches ? 'dark' : 'light');
       }
     });
