@@ -6,8 +6,12 @@
   <meta name="color-scheme" content="light dark" />
   <title>AirCare - Air Quality</title>
   <script>
+    function getCookie(name) {
+      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return m ? m[1] : null;
+    }
     try {
-      const savedTheme = localStorage.getItem('theme');
+      const savedTheme = localStorage.getItem('theme') || getCookie('theme');
       if (savedTheme === 'light') {
         document.documentElement.classList.remove('dark');
       } else if (savedTheme === 'dark') {
@@ -16,7 +20,8 @@
         document.documentElement.classList.add('dark');
       }
     } catch (err) {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      const savedTheme = getCookie('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
       }
     }
