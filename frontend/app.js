@@ -3,6 +3,7 @@
 // API base URL is provided by config.js so deployments can change the
 // backend endpoint without modifying this file.
 import { API_BASE_URL } from './config.js';
+import { signIn, signOut, getCurrentUser } from './auth.js';
 const apiBaseUrl = API_BASE_URL;
 
 // --- DOM elements ---
@@ -20,6 +21,8 @@ const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
 const themeToggle = document.getElementById('themeToggle');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -135,6 +138,27 @@ if (themeToggle) {
     setTheme(isDark ? 'light' : 'dark');
   });
   initTheme();
+}
+
+// --- Cognito Authentication ---
+async function updateAuthUI() {
+  const user = await getCurrentUser();
+  if (user) {
+    loginBtn.classList.add('hidden');
+    logoutBtn.classList.remove('hidden');
+  } else {
+    loginBtn.classList.remove('hidden');
+    logoutBtn.classList.add('hidden');
+  }
+}
+
+if (loginBtn && logoutBtn) {
+  loginBtn.addEventListener('click', () => signIn());
+  logoutBtn.addEventListener('click', async () => {
+    await signOut();
+    updateAuthUI();
+  });
+  updateAuthUI();
 }
 
 // --- City Autocomplete Logic ---

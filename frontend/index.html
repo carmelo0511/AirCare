@@ -40,7 +40,11 @@
       <h1 class="text-3xl font-bold flex items-center gap-2">
         <span>🌿</span> AirCare
       </h1>
-      <button id="themeToggle" class="text-2xl transition-colors" aria-label="Toggle dark mode">🌙</button>
+      <div class="flex items-center gap-2">
+        <button id="loginBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Login</button>
+        <button id="logoutBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Logout</button>
+        <button id="themeToggle" class="text-2xl transition-colors" aria-label="Toggle dark mode">🌙</button>
+      </div>
     </div>
 
     <!-- City selection and geolocation controls -->
@@ -93,6 +97,8 @@
       <ul id="historyList" class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300"></ul>
     </div>
   </div>
+  <!-- AWS Amplify for Cognito authentication -->
+  <script src="https://unpkg.com/aws-amplify@6/dist/aws-amplify.min.js"></script>
   <!-- Main JavaScript file for frontend logic -->
   <script type="module" src="app.js"></script>
 </body>

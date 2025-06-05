@@ -159,7 +159,15 @@ AirCare/
    ```bash
    API_BASE_URL=https://your-api-endpoint node scripts/set-api-url.js
    ```
-7. Serve the frontend locally from the project root:
+7. Generate the Cognito configuration for the frontend:
+   ```bash
+   COGNITO_REGION=your-region \
+   COGNITO_USER_POOL_ID=pool-id \
+   COGNITO_USER_POOL_CLIENT_ID=client-id \
+   COGNITO_DOMAIN=your-domain.auth.region.amazoncognito.com \
+   node scripts/set-cognito-config.js
+   ```
+8. Serve the frontend locally from the project root:
    ```bash
    npx http-server frontend -c-1
    ```
@@ -186,7 +194,7 @@ This regenerates `frontend/config.js` with your endpoint. Because the frontend i
 ## 🚧 Upcoming Improvements
 
 - 📊 Build a **QuickSight Dashboard** for AQI trends (from DynamoDB)
-- 👥 Integrate **Amazon Cognito** for user authentication
+- ✅ Integrate **Amazon Cognito** for user authentication
 - 📜 Implement API Gateway **usage plans and throttling**
 
 ---
