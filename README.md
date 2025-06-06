@@ -205,9 +205,7 @@ This regenerates `frontend/config.js` with your endpoint. Because the frontend i
 
 ## 🚧 Upcoming Improvements
 
-- 📊 Build a **QuickSight Dashboard** for AQI trends (from DynamoDB)
-- 📜 Implement API Gateway **usage plans and throttling**
-
+- Implement Terraform 
 ---
 
 ## License
