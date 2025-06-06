@@ -39,7 +39,7 @@ This enables analytics, trends, and potential dashboards (QuickSight integration
 
 Below is a screenshot showing the CloudWatch Dashboard and alarm configuration linked to an SNS topic:
 
-![CloudWatch & SNS Configuration](assets1/Cloudwatch Dashboard.png)
+![CloudWatch & SNS Configuration](assets1/cloudwatchdashboard.png)
 
 ---
 
