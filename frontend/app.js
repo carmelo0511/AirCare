@@ -100,6 +100,7 @@ function showHistory(show) {
 // --- Theme toggle ---
 function applyTheme(mode) {
   document.documentElement.classList.toggle('dark', mode === 'dark');
+  document.body.classList.toggle('dark', mode === 'dark');
   themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
 }
 
