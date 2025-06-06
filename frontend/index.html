@@ -3,59 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="light" />
   <title>AirCare - Air Quality</title>
-  <script>
-    function getCookie(name) {
-      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-      return m ? m[1] : null;
-    }
-
-    function applyInitialTheme(dark) {
-      document.documentElement.classList.toggle('dark', dark);
-      if (document.body) {
-        document.body.classList.toggle('dark', dark);
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.classList.toggle('dark', dark);
-        });
-      }
-    }
-
-    try {
-      const savedTheme = localStorage.getItem('theme') || getCookie('theme');
-      if (savedTheme === 'light') {
-        applyInitialTheme(false);
-      } else if (savedTheme === 'dark') {
-        applyInitialTheme(true);
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyInitialTheme(true);
-      }
-    } catch (err) {
-      const savedTheme = getCookie('theme');
-      if (
-        savedTheme === 'dark' ||
-        (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      ) {
-        applyInitialTheme(true);
-      }
-    }
-  </script>
-  <!-- Import Tailwind CSS from CDN and enable class-based dark mode -->
-  <script>
-    // Ensure the `tailwind` object exists before assigning the config to avoid
-    // "tailwind is not defined" errors in some browsers.
-    window.tailwind = window.tailwind || {};
-    window.tailwind.config = { darkMode: 'class' };
-  </script>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Optionally add your own custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-gray-900 dark:to-gray-800 min-h-screen flex flex-col items-center justify-center text-gray-800 dark:text-gray-200 font-sans transition-all duration-700 px-2">
+<body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center text-gray-800 font-sans transition-all duration-700 px-2">
   <!-- Main container for the app -->
-  <div class="w-full max-w-md md:max-w-lg p-6 bg-white dark:bg-gray-700 shadow-2xl rounded-2xl relative mx-auto">
-    <!-- Header with title and dark mode toggle -->
+  <div class="w-full max-w-md md:max-w-lg p-6 bg-white shadow-2xl rounded-2xl relative mx-auto">
+    <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-3xl font-bold flex items-center gap-2">
         <span>🌿</span> AirCare
@@ -63,7 +21,6 @@
       <div class="flex items-center gap-2">
         <button id="loginBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Login</button>
         <button id="logoutBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Logout</button>
-        <button id="themeToggle" class="text-2xl transition-colors" aria-label="Toggle dark mode">🌙</button>
       </div>
     </div>
 
@@ -72,17 +29,17 @@
       <label for="cityInput" class="block font-medium">Choose a city:</label>
       <!-- Input for manual city search with autocomplete -->
       <input type="text" id="cityInput" placeholder="e.g., London"
-        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-300"
+        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all"
         autocomplete="off" />
       <!-- Autocomplete dropdown suggestions (hidden by default) -->
-      <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden dark:bg-gray-700 dark:border-gray-600"></ul>
+      <ul id="citySuggestions" class="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded mt-1 hidden"></ul>
 
       <!-- Buttons: Search by city or use geolocation -->
       <div class="flex gap-2 mt-2">
-        <button id="fetchBtn" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition-all dark:bg-indigo-600 dark:hover:bg-indigo-700">
+        <button id="fetchBtn" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition-all">
           Search
         </button>
-        <button id="geoBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-all dark:bg-green-600 dark:hover:bg-green-700">
+        <button id="geoBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition-all">
           📍 My location
         </button>
       </div>
@@ -95,7 +52,7 @@
     </div>
 
     <!-- Error message display, hidden by default -->
-      <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 text-center font-medium"></div>
+      <div id="errorMsg" class="hidden mt-4 p-2 rounded bg-red-100 text-red-700 text-center font-medium"></div>
 
     <!-- AQI result panel, hidden by default -->
     <div id="result" class="mt-4 hidden transition-all duration-700">
@@ -114,7 +71,7 @@
     <!-- AQI History Section: recent measurements -->
     <div id="historySection" class="mt-6 hidden transition-all duration-700">
       <h3 class="text-lg font-semibold mb-2">AQI History</h3>
-      <ul id="historyList" class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300"></ul>
+      <ul id="historyList" class="list-disc list-inside text-sm text-gray-700"></ul>
     </div>
   </div>
   <!-- AWS Amplify for Cognito authentication -->
