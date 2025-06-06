@@ -20,7 +20,6 @@ const recommendation = document.getElementById('recommendation');
 const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
-const themeToggle = document.getElementById('themeToggle');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
@@ -97,67 +96,6 @@ function showHistory(show) {
   historySection.classList.toggle('hidden', !show);
 }
 
-// --- Theme toggle ---
-function applyTheme(mode) {
-  document.documentElement.classList.toggle('dark', mode === 'dark');
-  document.body.classList.toggle('dark', mode === 'dark');
-  themeToggle.textContent = mode === 'dark' ? '☀️' : '🌙';
-}
-
-function setCookie(name, value, days) {
-  document.cookie = `${name}=${value}; path=/; max-age=${days * 86400}`;
-}
-
-function getCookie(name) {
-  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-  return m ? m[1] : null;
-}
-
-function setTheme(mode) {
-  applyTheme(mode);
-  try {
-    localStorage.setItem('theme', mode);
-  } catch (_) {
-    setCookie('theme', mode, 365);
-  }
-}
-
-function initTheme() {
-  let saved = null;
-  try {
-    saved = localStorage.getItem('theme');
-  } catch (_) {
-    saved = getCookie('theme');
-  }
-  if (!saved) {
-    saved = getCookie('theme');
-  }
-  if (saved === 'light' || saved === 'dark') {
-    applyTheme(saved);
-  } else {
-    const system = window.matchMedia('(prefers-color-scheme: dark)');
-    applyTheme(system.matches ? 'dark' : 'light');
-    system.addEventListener('change', (e) => {
-      try {
-        if (!localStorage.getItem('theme') && !getCookie('theme')) {
-          applyTheme(e.matches ? 'dark' : 'light');
-        }
-      } catch (_) {
-        if (!getCookie('theme')) {
-          applyTheme(e.matches ? 'dark' : 'light');
-        }
-      }
-    });
-  }
-}
-
-if (themeToggle) {
-  themeToggle.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setTheme(isDark ? 'light' : 'dark');
-  });
-  initTheme();
-}
 
 // --- Cognito Authentication ---
 async function updateAuthUI() {
@@ -200,7 +138,7 @@ cityInput.addEventListener('input', () => {
       // Renders suggestions as clickable <li> elements
       citySuggestions.innerHTML = data.map(city => {
         const label = city.local_names && city.local_names.en ? city.local_names.en : city.name;
-        return `<li class="p-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-gray-600">${label}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`;
+        return `<li class="p-2 cursor-pointer hover:bg-indigo-100">${label}${city.state ? ', ' + city.state : ''}, ${city.country}</li>`;
       }).join('');
       citySuggestions.classList.remove('hidden');
 
