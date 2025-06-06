@@ -124,13 +124,17 @@ This project is fully deployed on **AWS**:
 
 ## 📂 Project Structure
 
-AirCare/  
-├── assets1/ # Images & diagrams  
-│   └── diagramme1.png  
-├── backend/ # Lambda source code  
-├── frontend/ # HTML/CSS/JavaScript (app.js, config.js, index.html)
-├── .github/workflows/ # CI/CD with GitHub Actions  
-├── README.md # This file
+AirCare/
+├── assets1/               # Images & diagrams
+│   ├── diagramme1.png
+│   └── cloudwatchdashboard.png
+├── backend/               # Lambda source code
+│   └── tests/             # Backend unit tests
+├── frontend/              # HTML/CSS/JavaScript (app.js, auth.js, config.js, index.html, style.css)
+├── scripts/               # Helper scripts to configure API and Cognito
+├── .github/workflows/     # CI/CD with GitHub Actions
+├── LICENSE
+└── README.md              # This file
 
 ---
 
