@@ -35,28 +35,30 @@ This enables analytics, trends, and potential dashboards (QuickSight integration
 
 ---
 
-## CloudWatch & SNS Screenshots
+## CloudWatch Dashboard & SNS
 
-Below is a screenshot showing the CloudWatch alarm configuration linked to an SNS topic:
+Below is a screenshot showing the CloudWatch Dashboard and alarm configuration linked to an SNS topic:
 
-![CloudWatch & SNS Configuration](assets1/cloudwatch-alarm.png)
+![CloudWatch & SNS Configuration](assets1/Cloudwatch Dashboard.png)
 
 ---
 
 ## 🧱 Cloud Architecture (diagram)
 
-![AirCare Architecture](assets1/diagramme.png)
+![AirCare Architecture](assets1/diagramme1.png)
 
 **Current stack:**
 
-- ⚡ **Frontend**: HTML, Tailwind CSS, JavaScript
-- ☁️ **Backend**: AWS Lambda (Node.js)
-- 🌐 **API Gateway**: Handles endpoints `/air`, `/geo/direct`, `/geo/reverse`, `/history`
-- 🗃️ **DynamoDB**: Stores AQI history for analytics & dashboards
-- 🔒 **API key secured** (OpenWeatherMap) via Lambda proxy
-- 🔍 **CloudWatch logs** for backend observability
-- ⚠️ **CloudWatch Alarm** + **SNS Email alert** on Lambda error
-- 📦 **S3**: Static assets hosting
+⚡ Frontend: HTML, Tailwind CSS, JavaScript
+☁️ Backend: AWS Lambda (Node.js)
+🌐 API Gateway: Handles endpoints /air, /geo/direct, /geo/reverse, /history
+🗃️ DynamoDB: Stores AQI history for analytics & dashboards
+🔒 API key secured (OpenWeatherMap) via Lambda proxy
+🔐 Amazon Cognito: Manages user authentication & authorization
+🔍 CloudWatch logs for backend observability
+⚠️ CloudWatch Alarm + SNS Email alert on Lambda error
+📦 S3: Static assets hosting
+
 ---
 
 ## 🖥️ Backend Lambda
@@ -124,7 +126,7 @@ This project is fully deployed on **AWS**:
 
 AirCare/  
 ├── assets1/ # Images & diagrams  
-│   └── diagramme.png  
+│   └── diagramme1.png  
 ├── backend/ # Lambda source code  
 ├── frontend/ # HTML/CSS/JavaScript (app.js, config.js, index.html)
 ├── .github/workflows/ # CI/CD with GitHub Actions  
