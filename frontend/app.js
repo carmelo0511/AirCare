@@ -39,13 +39,27 @@ const AQI_MAP = [
 const roundCoord = (v) => Number(parseFloat(v).toFixed(2));
 
 async function fetchAirData(lat, lon) {
-  const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
-  return res.json();
+  try {
+    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    throw new Error(`Failed to fetch air data: ${err.message}`);
+  }
 }
 
 async function fetchHistoryData(lat, lon) {
-  const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}`);
-  return res.json();
+  try {
+    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}`);
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    throw new Error(`Failed to fetch history data: ${err.message}`);
+  }
 }
 
 function renderAirInfo(cityLabel, aqi) {
