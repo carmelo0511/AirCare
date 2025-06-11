@@ -40,9 +40,9 @@ const AQI_MAP = [
 // --- Data helpers ---
 const roundCoord = (v) => Number(parseFloat(v).toFixed(2));
 
-async function fetchAirData(lat, lon) {
+async function fetchAirData(lat, lon, userId) {
   try {
-    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}`);
+    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}&userId=${encodeURIComponent(userId)}`);
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
@@ -52,9 +52,9 @@ async function fetchAirData(lat, lon) {
   }
 }
 
-async function fetchHistoryData(lat, lon) {
+async function fetchHistoryData(lat, lon, userId) {
   try {
-    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}`);
+    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}&userId=${encodeURIComponent(userId)}`);
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
@@ -248,6 +248,14 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
   showHistory(false);
   historyList.innerHTML = "";
 
+  const user = await getCurrentUser();
+  if (!user) {
+    showError('Please login to fetch data.');
+    showLoader(false);
+    return;
+  }
+  const userId = user.username || user.sub;
+
   try {
     // 1. Get display name for the location
     let cityLabel = locationLabel;
@@ -258,11 +266,11 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     const roundedLat = roundCoord(lat);
     const roundedLon = roundCoord(lon);
 
-    const airData = await fetchAirData(roundedLat, roundedLon);
+    const airData = await fetchAirData(roundedLat, roundedLon, userId);
     if (!airData || airData.error) throw new Error(airData.error || "AQI data unavailable");
     renderAirInfo(cityLabel, airData.aqi);
 
-    const histData = await fetchHistoryData(roundedLat, roundedLon);
+    const histData = await fetchHistoryData(roundedLat, roundedLon, userId);
     renderHistory(histData.history);
   } catch (err) {
     showError("Error: " + err.message);
