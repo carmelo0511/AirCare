@@ -81,7 +81,12 @@ function renderHistory(history) {
     desc.slice(0, 5).forEach(item => {
       const date = new Date(item.timestamp);
       const li = document.createElement("li");
-      li.textContent = `${date.toLocaleString('en-US')} → AQI ${item.aqi} (${item.advice})`;
+      const info = AQI_MAP[item.aqi - 1];
+      li.className = "flex items-center justify-between border rounded-md p-2 bg-gray-50";
+      li.innerHTML = `
+        <span>${date.toLocaleString('en-US')}</span>
+        <span class="font-medium ${info.color}">${info.emoji} ${info.label} (${item.aqi})</span>
+      `;
       historyList.appendChild(li);
     });
 
