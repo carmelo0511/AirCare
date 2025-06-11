@@ -71,9 +71,12 @@
     <!-- AQI History Section: recent measurements -->
     <div id="historySection" class="mt-6 hidden transition-all duration-700">
       <h3 class="text-lg font-semibold mb-2">AQI History</h3>
+      <canvas id="historyChart" class="w-full h-48 mb-4"></canvas>
       <ul id="historyList" class="list-disc list-inside text-sm text-gray-700"></ul>
     </div>
   </div>
+  <!-- Chart.js for history graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- AWS Amplify for Cognito authentication -->
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.46/dist/aws-amplify.min.js"></script>
   <!-- Main JavaScript file for frontend logic -->
