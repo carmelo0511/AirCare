@@ -85,9 +85,14 @@ function renderHistory(history) {
       historyList.appendChild(li);
     });
 
-    const asc = history.slice().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    const labels = asc.map(item => new Date(item.timestamp).toLocaleString('en-US'));
-    const values = asc.map(item => item.aqi);
+    const asc = history
+      .slice()
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const recent = asc.slice(-10); // keep only the last 10 entries for the graph
+    const labels = recent.map(item =>
+      new Date(item.timestamp).toLocaleString('en-US')
+    );
+    const values = recent.map(item => item.aqi);
 
     if (historyChartEl) {
       if (!historyChart) {
