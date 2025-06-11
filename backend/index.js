@@ -72,6 +72,8 @@ async function handleGeoReverse(params, APIKEY) {
 }
 
 async function handleAir(params, APIKEY) {
+  const { userId } = params;
+  if (!userId) throw new Error("Missing 'userId' parameter");
   let latitude, longitude;
   const { city, lat, lon } = params;
 
@@ -111,7 +113,8 @@ async function handleAir(params, APIKEY) {
     aqi: aqiValue,
     pm2_5: record.components.pm2_5,
     pm10: record.components.pm10,
-    advice: getAdvice(aqiValue)
+    advice: getAdvice(aqiValue),
+    userId
   };
 
   try {
@@ -137,8 +140,9 @@ async function handleAir(params, APIKEY) {
 }
 
 async function handleHistory(params) {
-  const { location } = params;
+  const { location, userId } = params;
   if (!location) throw new Error("Missing 'location' parameter");
+  if (!userId) throw new Error("Missing 'userId' parameter");
   let locValue = decodeURIComponent(location);
   if (/^[-\d.]+,[-\d.]+$/.test(locValue)) {
     const [latStr, lonStr] = locValue.split(',');
@@ -153,11 +157,14 @@ async function handleHistory(params) {
       new QueryCommand({
         TableName: TABLE_NAME,
         KeyConditionExpression: "#loc = :locValue",
+        FilterExpression: "#user = :userId",
         ExpressionAttributeNames: {
-          "#loc": "location"
+          "#loc": "location",
+          "#user": "userId"
         },
         ExpressionAttributeValues: {
-          ":locValue": locValue
+          ":locValue": locValue,
+          ":userId": userId
         },
         ScanIndexForward: true,
         ConsistentRead: true
