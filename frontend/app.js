@@ -20,11 +20,13 @@ const recommendation = document.getElementById('recommendation');
 const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
+const historyChartEl = document.getElementById('historyChart');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
+let historyChart = null;
 
 // AQI Mapping: associates each AQI level (1-5) to a label, color, emoji, and health advice.
 const AQI_MAP = [
@@ -75,17 +77,55 @@ function renderAirInfo(cityLabel, aqi) {
 function renderHistory(history) {
   historyList.innerHTML = "";
   if (history && history.length) {
-    const sorted = history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    sorted.slice(0, 5).forEach(item => {
+    const desc = history.slice().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    desc.slice(0, 5).forEach(item => {
       const date = new Date(item.timestamp);
       const li = document.createElement("li");
       li.textContent = `${date.toLocaleString('en-US')} → AQI ${item.aqi} (${item.advice})`;
       historyList.appendChild(li);
     });
+
+    const asc = history.slice().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const labels = asc.map(item => new Date(item.timestamp).toLocaleString('en-US'));
+    const values = asc.map(item => item.aqi);
+
+    if (historyChartEl) {
+      if (!historyChart) {
+        const ctx = historyChartEl.getContext('2d');
+        historyChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'AQI',
+              data: values,
+              borderColor: 'rgb(99, 102, 241)',
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true, suggestedMax: 5 }
+            }
+          }
+        });
+      } else {
+        historyChart.data.labels = labels;
+        historyChart.data.datasets[0].data = values;
+        historyChart.update();
+      }
+    }
   } else {
     const li = document.createElement("li");
     li.textContent = "No history available for this location.";
     historyList.appendChild(li);
+    if (historyChart) {
+      historyChart.destroy();
+      historyChart = null;
+    }
   }
   showHistory(true);
 }
