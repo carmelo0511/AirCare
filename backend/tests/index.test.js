@@ -200,3 +200,16 @@ describe('handler /history', () => {
     expect(JSON.parse(res.body).error).toMatch(/DynamoDB history read failed/);
   });
 });
+
+describe('handler unknown endpoint', () => {
+  beforeEach(() => {
+    process.env.OPENWEATHER_APIKEY = 'dummy';
+  });
+
+  test('returns 404 for invalid path', async () => {
+    const event = { resource: '/invalid', queryStringParameters: {} };
+    const res = await handler(event);
+    expect(res.statusCode).toBe(404);
+    expect(JSON.parse(res.body).error).toMatch(/Unknown endpoint/);
+  });
+});
