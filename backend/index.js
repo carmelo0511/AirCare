@@ -73,7 +73,6 @@ async function handleGeoReverse(params, APIKEY) {
 
 async function handleAir(params, APIKEY) {
   const { userId } = params;
-  if (!userId) throw new Error("Missing 'userId' parameter");
   let latitude, longitude;
   const { city, lat, lon } = params;
 
@@ -114,7 +113,7 @@ async function handleAir(params, APIKEY) {
     pm2_5: record.components.pm2_5,
     pm10: record.components.pm10,
     advice: getAdvice(aqiValue),
-    userId
+    ...(userId ? { userId } : {})
   };
 
   try {
@@ -142,7 +141,6 @@ async function handleAir(params, APIKEY) {
 async function handleHistory(params) {
   const { location, userId } = params;
   if (!location) throw new Error("Missing 'location' parameter");
-  if (!userId) throw new Error("Missing 'userId' parameter");
   let locValue = decodeURIComponent(location);
   if (/^[-\d.]+,[-\d.]+$/.test(locValue)) {
     const [latStr, lonStr] = locValue.split(',');
@@ -153,23 +151,20 @@ async function handleHistory(params) {
 
   let items;
   try {
-    const result = await ddb.send(
-      new QueryCommand({
-        TableName: TABLE_NAME,
-        KeyConditionExpression: "#loc = :locValue",
-        FilterExpression: "#user = :userId",
-        ExpressionAttributeNames: {
-          "#loc": "location",
-          "#user": "userId"
-        },
-        ExpressionAttributeValues: {
-          ":locValue": locValue,
-          ":userId": userId
-        },
-        ScanIndexForward: true,
-        ConsistentRead: true
-      })
-    );
+    const queryInput = {
+      TableName: TABLE_NAME,
+      KeyConditionExpression: "#loc = :locValue",
+      ExpressionAttributeNames: { "#loc": "location" },
+      ExpressionAttributeValues: { ":locValue": locValue },
+      ScanIndexForward: true,
+      ConsistentRead: true
+    };
+    if (userId) {
+      queryInput.FilterExpression = "#user = :userId";
+      queryInput.ExpressionAttributeNames["#user"] = "userId";
+      queryInput.ExpressionAttributeValues[":userId"] = userId;
+    }
+    const result = await ddb.send(new QueryCommand(queryInput));
     items = result.Items || [];
     console.log(`📚 Found ${items.length} items for location=${locValue}`);
   } catch (queryErr) {

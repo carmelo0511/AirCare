@@ -102,7 +102,7 @@ describe('handler /air', () => {
         list: [{ main: { aqi: 2 }, components: { pm2_5: 5, pm10: 10 } }]
       }) });
 
-    const event = { resource: '/air', queryStringParameters: { city: 'Berlin', userId: 'user1' } };
+    const event = { resource: '/air', queryStringParameters: { city: 'Berlin' } };
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
@@ -113,7 +113,7 @@ describe('handler /air', () => {
   });
 
   test('returns error when required parameters missing', async () => {
-    const event = { resource: '/air', queryStringParameters: { userId: 'user1' } };
+    const event = { resource: '/air', queryStringParameters: {} };
     const res = await handler(event);
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/Missing 'city' or 'lat'\+'lon'/);
@@ -127,7 +127,7 @@ describe('handler /air', () => {
       })
     });
 
-    const event = { resource: '/air', queryStringParameters: { lat: '1', lon: '2', userId: 'user1' } };
+    const event = { resource: '/air', queryStringParameters: { lat: '1', lon: '2' } };
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
@@ -147,7 +147,7 @@ describe('handler /air', () => {
       })
     });
     mockSend.mockRejectedValueOnce(new Error('boom'));
-    const event = { resource: '/air', queryStringParameters: { lat: '3', lon: '4', userId: 'user1' } };
+    const event = { resource: '/air', queryStringParameters: { lat: '3', lon: '4' } };
     const res = await handler(event);
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/DynamoDB write failed/);
@@ -166,7 +166,7 @@ describe('handler /history', () => {
 
   test('returns history for valid location parameter', async () => {
     mockSend.mockResolvedValueOnce({ Items: [{ aqi: 1 }] });
-    const event = { resource: '/history', queryStringParameters: { location: '1,2', userId: 'user1' } };
+    const event = { resource: '/history', queryStringParameters: { location: '1,2' } };
     const res = await handler(event);
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
@@ -175,10 +175,10 @@ describe('handler /history', () => {
 
   test('normalizes coordinates to two decimals', async () => {
     mockSend.mockResolvedValueOnce({ Items: [{ aqi: 2 }] });
-    const event = { resource: '/history', queryStringParameters: { location: '1.234,2.789', userId: 'user1' } };
+    const event = { resource: '/history', queryStringParameters: { location: '1.234,2.789' } };
     const res = await handler(event);
     expect(QueryCommandMock).toHaveBeenCalledWith(expect.objectContaining({
-      ExpressionAttributeValues: { ':locValue': '1.23,2.79', ':userId': 'user1' }
+      ExpressionAttributeValues: { ':locValue': '1.23,2.79' }
     }));
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body);
@@ -186,7 +186,7 @@ describe('handler /history', () => {
   });
 
   test('returns error when location parameter missing', async () => {
-    const event = { resource: '/history', queryStringParameters: { userId: 'user1' } };
+    const event = { resource: '/history', queryStringParameters: {} };
     const res = await handler(event);
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/Missing 'location' parameter/);
@@ -194,7 +194,7 @@ describe('handler /history', () => {
 
   test('returns error when DynamoDB query fails', async () => {
     mockSend.mockRejectedValueOnce(new Error('query err'));
-    const event = { resource: '/history', queryStringParameters: { location: '1,2', userId: 'user1' } };
+    const event = { resource: '/history', queryStringParameters: { location: '1,2' } };
     const res = await handler(event);
     expect(res.statusCode).toBe(400);
     expect(JSON.parse(res.body).error).toMatch(/DynamoDB history read failed/);

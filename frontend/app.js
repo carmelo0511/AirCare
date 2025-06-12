@@ -249,12 +249,7 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
   historyList.innerHTML = "";
 
   const user = await getCurrentUser();
-  if (!user) {
-    showError('Please login to fetch data.');
-    showLoader(false);
-    return;
-  }
-  const userId = user.username || user.sub;
+  const userId = user ? user.username || user.sub : undefined;
 
   try {
     // 1. Get display name for the location
