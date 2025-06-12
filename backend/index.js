@@ -201,7 +201,7 @@ exports.handler = async (event) => {
     else if (path.endsWith("/geo/reverse")) data = await handleGeoReverse(params, APIKEY);
     else if (path.endsWith("/air")) data = await handleAir(params, APIKEY);
     else if (path.endsWith("/history")) data = await handleHistory(params);
-    else throw new Error("Unknown endpoint: " + path);
+    else return buildResponse(404, { error: "Unknown endpoint: " + path });
 
     return buildResponse(200, data);
   } catch (err) {
