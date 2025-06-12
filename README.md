@@ -80,8 +80,8 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
   - API keys and table names are **never hardcoded** (managed with environment variables)
 - **How to deploy:**  
   1. Edit the code in [`backend/index.js`](./backend/index.js)  
-  2. Zip the contents of `backend/` and upload to AWS Lambda (or automate via CI/CD)  
-  3. See comments in `index.js` for full code explanations
+ 2. Zip the contents of `backend/` and upload to AWS Lambda (or automate via CI/CD). This creates a `lambda.zip` archive in the repository root used for deployment.
+ 3. See comments in `index.js` for full code explanations
 
 ---
 
