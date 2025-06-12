@@ -65,7 +65,7 @@ Below is a screenshot showing the CloudWatch Dashboard and alarm configuration l
 
 All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
 
-- **Language:** Node.js 18.x (uses AWS SDK v3, native `fetch()`)
+- **Language:** Node.js 20.x (uses AWS SDK v3, native `fetch()`)
 - **Endpoints handled:**
   - `/geo/direct` – City autocomplete (OpenWeatherMap API)
   - `/geo/reverse` – Reverse geocoding (coordinates → city)
@@ -142,7 +142,7 @@ AirCare/
 
 ### Local setup
 
-1. Install **Node.js 18** or newer.
+1. Install **Node.js 20** or newer.
 2. Clone this repository and install the backend dependencies:
    ```bash
    git clone https://github.com/carmelo0511/AirCare.git
