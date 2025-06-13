@@ -167,7 +167,7 @@ AirCare/
    ```bash
    API_BASE_URL=https://your-api-endpoint node scripts/set-api-url.js
    ```
-   This creates `frontend/config.js`, which is ignored by Git.
+   This creates `frontend/config.js`.
 7. Generate the Cognito configuration for the frontend:
    ```bash
    COGNITO_REGION=your-region \
