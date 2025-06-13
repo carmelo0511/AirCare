@@ -12,4 +12,4 @@ if (!fs.existsSync(configPath)) {
   console.log(`Created ${configPath} with API_BASE_URL=${apiUrl}`);
 }
 
-execSync('npx http-server frontend -c-1', { stdio: 'inherit', cwd: rootDir });
+execSync('npx --yes http-server frontend -c-1', { stdio: 'inherit', cwd: rootDir });
