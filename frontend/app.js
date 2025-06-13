@@ -103,20 +103,19 @@ function renderHistory(history) {
       if (!historyChart) {
         const ctx = historyChartEl.getContext('2d');
         historyChart = new Chart(ctx, {
-          type: 'line',
+          type: 'bar',
           data: {
             labels,
             datasets: [{
               label: 'AQI',
               data: values,
-              borderColor: 'rgb(99, 102, 241)',
-              backgroundColor: 'rgba(99, 102, 241, 0.2)',
-              tension: 0.3,
-              fill: true
+              backgroundColor: 'rgba(99, 102, 241, 0.6)',
+              borderRadius: 4
             }]
           },
           options: {
             responsive: true,
+            plugins: { legend: { display: false } },
             scales: {
               y: { beginAtZero: true, suggestedMax: 5 }
             }
