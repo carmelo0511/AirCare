@@ -40,14 +40,18 @@ const AQI_MAP = [
 // --- Data helpers ---
 const roundCoord = (v) => Number(parseFloat(v).toFixed(2));
 
+async function fetchJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+  return res.json();
+}
+
 async function fetchAirData(lat, lon, userId) {
   try {
     const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
-    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}${userParam}`);
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
-    }
-    return await res.json();
+    return await fetchJson(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}${userParam}`);
   } catch (err) {
     throw new Error(`Failed to fetch air data: ${err.message}`);
   }
@@ -56,11 +60,7 @@ async function fetchAirData(lat, lon, userId) {
 async function fetchHistoryData(lat, lon, userId) {
   try {
     const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
-    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}${userParam}`);
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
-    }
-    return await res.json();
+    return await fetchJson(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}${userParam}`);
   } catch (err) {
     throw new Error(`Failed to fetch history data: ${err.message}`);
   }
@@ -287,8 +287,9 @@ async function fetchAirByCity(city) {
 
   try {
     // Fetch coordinates for the provided city name using /geo/direct
-    const geoRes = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`);
-    const geoData = await geoRes.json();
+    const geoData = await fetchJson(
+      `${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`
+    );
     if (!geoData.length) throw new Error("City not found.");
     const { lat, lon, name, country, local_names } = geoData[0];
     const label = local_names && local_names.en ? local_names.en : name;
@@ -298,6 +299,7 @@ async function fetchAirByCity(city) {
     showError("Error: " + err.message);
     showResult(false);
     showHistory(false);
+  } finally {
     showLoader(false);
   }
 }
