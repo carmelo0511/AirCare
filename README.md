@@ -165,7 +165,7 @@ AirCare/
    ```
 6. Set the API endpoint for the frontend:
    ```bash
-   API_BASE_URL=https://your-api-endpoint node scripts/set-api-url.js
+   API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
    ```
    This creates `frontend/config.js`.
 7. Generate the Cognito configuration for the frontend:
