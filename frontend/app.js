@@ -42,7 +42,8 @@ const roundCoord = (v) => Number(parseFloat(v).toFixed(2));
 
 async function fetchAirData(lat, lon, userId) {
   try {
-    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}&userId=${encodeURIComponent(userId)}`);
+    const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
+    const res = await fetch(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}${userParam}`);
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
@@ -54,7 +55,8 @@ async function fetchAirData(lat, lon, userId) {
 
 async function fetchHistoryData(lat, lon, userId) {
   try {
-    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}&userId=${encodeURIComponent(userId)}`);
+    const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
+    const res = await fetch(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}${userParam}`);
     if (!res.ok) {
       throw new Error(`Request failed with status ${res.status}`);
     }
