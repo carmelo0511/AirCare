@@ -31,10 +31,10 @@ let historyChart = null;
 // AQI Mapping: associates each AQI level (1-5) to a label, color, emoji, and health advice.
 const AQI_MAP = [
   { label: "Excellent", color: "text-green-600", emoji: "🟢", advice: "Fresh air, enjoy it!" },
-  { label: "Good", color: "text-green-500", emoji: "😊", advice: "No issues for asthmatics." },
-  { label: "Moderate", color: "text-yellow-600", emoji: "😐", advice: "Avoid prolonged exertion if sensitive." },
-  { label: "Poor", color: "text-orange-600", emoji: "😷", advice: "Limit outdoor activities and monitor symptoms." },
-  { label: "Very poor", color: "text-red-600", emoji: "🚨", advice: "Stay indoors and follow your treatment!" }
+  { label: "Good", color: "text-green-500", emoji: "🟡", advice: "No issues for asthmatics." },
+  { label: "Moderate", color: "text-yellow-600", emoji: "🟠", advice: "Avoid prolonged exertion if sensitive." },
+  { label: "Poor", color: "text-orange-600", emoji: "🔴", advice: "Limit outdoor activities and monitor symptoms." },
+  { label: "Very poor", color: "text-red-600", emoji: "⛔", advice: "Stay indoors and follow your treatment!" }
 ];
 
 // --- Data helpers ---
