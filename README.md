@@ -182,17 +182,16 @@ AirCare/
    After adjusting the domain or URLs, rerun the script above to regenerate
    `frontend/cognito-config.js`.
 8. Serve the frontend locally from the project root. The helper script below
-   ensures that `frontend/config.js` exists before launching the server:
+   (re)generates `frontend/config.js` every time so the API endpoint matches
+   the `API_BASE_URL` environment variable:
    ```bash
    node scripts/dev-server.js
    ```
    Then open `http://localhost:8080` in your browser.
 
-### Troubleshooting
-
 - **404 for `config.js`** – run `node scripts/dev-server.js` to start the
-  server. This script automatically creates `frontend/config.js` if it is
-  missing.
+  server. It will regenerate `frontend/config.js` using `API_BASE_URL` so the
+  frontend points to the correct backend.
 - **404 for `chart.umd.js`** – ensure you have an internet connection. The
   Chart.js library is loaded from a CDN (see `frontend/index.html`, line 79).
 ### Changing the API endpoint
