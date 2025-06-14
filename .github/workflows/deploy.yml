@@ -101,6 +101,19 @@ jobs:
         working-directory: ./terraform
         run: terraform validate
 
+      - name: 🔁 Terraform Import Lambda Permission
+        working-directory: ./terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
+          AWS_DEFAULT_REGION: 'ca-central-1'
+          TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
+          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+        run: |
+          terraform import aws_lambda_permission.apigw_lambda "$LAMBDA_FUNCTION_NAME/AllowAPIGatewayInvoke-v2" || true
+          terraform import aws_cloudwatch_log_group.lambda_logs "/aws/lambda/$LAMBDA_FUNCTION_NAME" || true
+
 
       - name: 🚀 Terraform Apply
         working-directory: ./terraform
