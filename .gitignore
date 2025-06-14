@@ -12,3 +12,4 @@ tfplan
 # Local helper scripts
 check_aircare_terraform.sh
 import_all.sh
+.terraform/
