@@ -79,11 +79,15 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
   - Enforces English responses from OpenWeather
   - `/history` decodes and normalizes the `location` parameter for reliable lookups
   - API keys and table names are **never hardcoded** (managed with environment variables)
-- **How to deploy:**
-  1. Edit the code in [`backend/index.js`](./backend/index.js)
-  2. Run `npm ci` in the `backend/` directory and zip the contents to `lambda.zip`.
-  3. Apply the Terraform configuration to create or update all AWS resources, including the Lambda function.
-  4. See comments in [`backend/index.js`](./backend/index.js) for full code explanations
+
+- **How to deploy:**  
+  1. Edit the code in [`backend/index.js`](./backend/index.js)  
+2. Remove development dependencies with `npm prune --omit=dev`, then zip the
+   contents of `backend/` (excluding the `tests/` folder) and upload to AWS
+   Lambda (or let CI/CD handle it). This produces a `lambda.zip` archive in the
+   repository root used for deployment.
+3. See comments in [`backend/index.js`](./backend/index.js) for full code explanations
+
 
 ---
 
