@@ -23,11 +23,7 @@
       <div class="flex items-center gap-2">
         <button id="loginBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Login</button>
         <button id="logoutBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Logout</button>
-        <select id="langSelect" class="ml-2 border rounded p-1 text-sm">
-          <option value="en">EN</option>
-          <option value="fr">FR</option>
-        </select>
-        <button id="themeToggle" class="ml-2 border rounded p-1 text-sm">Dark</button>
+        <!-- Removed language selector and dark mode toggle -->
       </div>
     </div>
     <!-- Offline notice -->
@@ -90,7 +86,6 @@
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.46/dist/aws-amplify.min.js"></script>
   <!-- Main JavaScript file for frontend logic -->
   <script type="module" src="app.js"></script>
-  <script type="module" src="i18n.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

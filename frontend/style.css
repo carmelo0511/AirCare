@@ -39,23 +39,4 @@
   transition: opacity 0.3s ease;
 }
 
-/* --- Dark mode --- */
-body.dark {
-  background: linear-gradient(to bottom right, #1f2937, #4b5563);
-  color: #f3f4f6;
-}
-
-body.dark #appContainer {
-  background-color: #374151;
-}
-
-body.dark input,
-body.dark select {
-  color: #f3f4f6;
-  background-color: #4b5563;
-  border-color: #6b7280;
-}
-
-body.dark #citySuggestions {
-  background-color: #374151;
-}
+/* Dark mode styles removed */
