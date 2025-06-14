@@ -34,7 +34,11 @@ function normalizeCoordinate(value) {
 
 // Retrieve the OpenWeatherMap API key from environment variables
 function getApiKey() {
-  return process.env.OPENWEATHER_APIKEY || process.env.API_KEY;
+  return (
+    process.env.OPENWEATHER_APIKEY ||
+    process.env.API_KEY ||
+    process.env.OPENWEATHER_API_KEY
+  );
 }
 
 module.exports = {
