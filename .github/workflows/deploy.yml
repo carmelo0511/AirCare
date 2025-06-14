@@ -116,7 +116,6 @@ jobs:
           terraform import aws_s3_bucket.frontend_bucket "$S3_BUCKET" || true
           terraform import aws_iam_role.lambda_exec lambda_exec_role || true
           terraform import aws_dynamodb_table.history_table AirCareHistoryAQI || true
-          terraform import aws_lambda_function.aircare_backend "$LAMBDA_FUNCTION_NAME" || true
           terraform import aws_cloudfront_distribution.aircare_distribution "$CLOUDFRONT_DIST_ID" || true
 
       - name: 🚀 Terraform Apply

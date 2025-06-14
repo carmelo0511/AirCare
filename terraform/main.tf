@@ -91,23 +91,8 @@ resource "aws_iam_role_policy" "lambda_logs" {
     ]
   })
 }
-resource "aws_lambda_function" "aircare_backend" {
-  filename      = "../lambda.zip"
+data "aws_lambda_function" "aircare_backend" {
   function_name = var.lambda_function_name
-  role          = aws_iam_role.lambda_exec.arn
-  handler       = "index.handler"
-  runtime       = "nodejs18.x"
-  timeout       = 10
-  # Lambda package may not exist when running validation in CI/local.
-  # Use try() so validation succeeds even if the zip file is absent.
-  source_code_hash = try(filebase64sha256("../lambda.zip"), "")
-  environment {
-    variables = {
-      TABLE_NAME         = var.dynamodb_table_name
-      OPENWEATHER_APIKEY = var.openweather_api_key
-    }
-  }
-  depends_on = [aws_iam_role.lambda_exec]
 }
 
 resource "aws_api_gateway_rest_api" "aircare_api" {
@@ -121,7 +106,7 @@ resource "aws_api_gateway_integration" "air_integration" {
   http_method             = aws_api_gateway_method.air_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "aircare_deployment" {
@@ -152,13 +137,13 @@ resource "aws_api_gateway_stage" "prod" {
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowAPIGatewayInvoke-v2"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.aircare_backend.function_name
+  function_name = data.aws_lambda_function.aircare_backend.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
 
 resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/${aws_lambda_function.aircare_backend.function_name}"
+  name              = "/aws/lambda/${data.aws_lambda_function.aircare_backend.function_name}"
   retention_in_days = 14
 }
 
@@ -172,7 +157,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   statistic           = "Sum"
   threshold           = 1
   dimensions = {
-    FunctionName = aws_lambda_function.aircare_backend.function_name
+    FunctionName = data.aws_lambda_function.aircare_backend.function_name
   }
   alarm_description = "Alarm if AirCare lambda errors >=1 in a minute"
 }
@@ -281,7 +266,7 @@ resource "aws_api_gateway_integration" "geo_direct" {
   http_method             = aws_api_gateway_method.geo_direct.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
 }
 
 resource "aws_api_gateway_resource" "geo_reverse" {
@@ -303,7 +288,7 @@ resource "aws_api_gateway_integration" "geo_reverse" {
   http_method             = aws_api_gateway_method.geo_reverse.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
 }
 
 resource "aws_api_gateway_resource" "history" {
@@ -325,5 +310,5 @@ resource "aws_api_gateway_integration" "history" {
   http_method             = aws_api_gateway_method.history.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
 }
