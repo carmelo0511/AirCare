@@ -147,7 +147,13 @@ resource "aws_lambda_permission" "apigw_lambda" {
 resource "aws_dynamodb_table" "history_table" {
   name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "timestamp"
+  hash_key     = "location"
+  range_key    = "timestamp"
+
+  attribute {
+    name = "location"
+    type = "S"
+  }
 
   attribute {
     name = "timestamp"

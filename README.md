@@ -22,13 +22,15 @@ This CloudFront distribution points to the S3 bucket configured to serve all HTM
 
 ## DynamoDB AQI History (NEW)
 
-AirCare **persists all AQI lookups** to a DynamoDB table (`AirCareHistoryAQI`).  
+AirCare **persists all AQI lookups** to a DynamoDB table (`AirCareHistoryAQI`).
 Each time a user requests air quality for a city or location, the following data is stored :
 - Location (`lat,lon`)
 - Timestamp (ISO format)
 - AQI value
 - Particulate data (PM2.5, PM10, etc.)
 - Health advice
+
+The table uses **`location` as the partition key** and `timestamp` as the sort key so history lookups are efficient by location and ordered by time.
 
 A dedicated endpoint (`/history`) allows the frontend to **display the full AQI history** for any location.  
 This enables analytics, trends, and potential dashboards (QuickSight integration is the next step).
