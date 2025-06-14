@@ -139,10 +139,10 @@ resource "aws_lambda_permission" "apigw_lambda" {
   # statement id already exists. Terraform will store the generated
   # id in the state so subsequent applies reuse it.
   statement_id_prefix = "AllowAPIGatewayInvoke-"
-  action        = "lambda:InvokeFunction"
-  function_name = data.aws_lambda_function.aircare_backend.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
+  action              = "lambda:InvokeFunction"
+  function_name       = data.aws_lambda_function.aircare_backend.function_name
+  principal           = "apigateway.amazonaws.com"
+  source_arn          = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
 
 
