@@ -1,7 +1,8 @@
-# main.tf
 provider "aws" {
   region = var.region
 }
+
+data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "frontend_bucket" {
   bucket        = var.s3_bucket_name
@@ -13,13 +14,14 @@ resource "aws_s3_bucket" "frontend_bucket" {
 
 resource "aws_s3_bucket_website_configuration" "frontend_website" {
   bucket = aws_s3_bucket.frontend_bucket.id
+
   index_document {
     suffix = "index.html"
   }
 }
 
 resource "aws_iam_role" "lambda_exec" {
-  name = "lambda_exec_role"
+  name = var.lambda_role_name
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
@@ -84,23 +86,23 @@ resource "aws_api_gateway_stage" "prod" {
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
-  statement_id  = "AllowAPIGatewayInvoke"
+  statement_id  = "AllowAPIGatewayInvoke-v2"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.aircare_backend.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
 
-data "aws_caller_identity" "current" {}
-
 resource "aws_dynamodb_table" "history_table" {
   name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "timestamp"
+
   attribute {
     name = "timestamp"
     type = "S"
   }
+
   tags = {
     Project = "AirCare"
   }
@@ -145,16 +147,17 @@ resource "aws_cloudfront_distribution" "aircare_distribution" {
     }
   }
 
+  comment = var.cloudfront_comment
+
   tags = {
     Project = "AirCare"
   }
-
-  comment = var.cloudfront_comment
 }
+
 resource "null_resource" "invalidate_cloudfront" {
   triggers = {
     distribution_id = aws_cloudfront_distribution.aircare_distribution.id
-    timestamp       = timestamp()  # force une exécution à chaque plan/apply
+    timestamp       = timestamp()
   }
 
   provisioner "local-exec" {
@@ -164,4 +167,16 @@ resource "null_resource" "invalidate_cloudfront" {
         --paths "/*"
     EOT
   }
+}
+resource "aws_api_gateway_resource" "air_resource" {
+  rest_api_id = aws_api_gateway_rest_api.aircare_api.id
+  parent_id   = aws_api_gateway_rest_api.aircare_api.root_resource_id
+  path_part   = "air"
+}
+
+resource "aws_api_gateway_method" "air_method" {
+  rest_api_id   = aws_api_gateway_rest_api.aircare_api.id
+  resource_id   = aws_api_gateway_resource.air_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
 }

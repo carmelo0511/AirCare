@@ -1,9 +1,9 @@
-# terraform.tfvars
 region               = "ca-central-1"
 s3_bucket_name       = "aircare-frontend-bryannakache"
 lambda_function_name = "aircare-backend"
+dynamodb_table_name  = "AirCareHistoryAQI"
+openweather_api_key  = "ta_clé"
 api_name             = "AirCare API"
 stage_name           = "prod"
-cloudfront_comment   = "AirCare CloudFront distribution"
-dynamodb_table_name  = "AirCareHistoryAQI"
-openweather_api_key  = "TON_API_KEY_ICI"
+cloudfront_comment   = "AirCare CDN"
+lambda_role_name     = "lambda_exec_role"

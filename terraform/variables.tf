@@ -33,3 +33,9 @@ variable "cloudfront_comment" {
   description = "Comment for CloudFront distribution"
   default     = "CloudFront distribution for AirCare"
 }
+
+variable "lambda_role_name" {
+  description = "Nom du rôle Lambda IAM"
+  type        = string
+  default     = "lambda_exec_role"
+}
