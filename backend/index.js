@@ -195,14 +195,17 @@ exports.handler = async (event) => {
   console.log("🔔 Path:", path);
   console.log("🔍 Parameters:", JSON.stringify(params));
 
-  try {
-    let data;
-    if (path.endsWith("/geo/direct")) data = await handleGeoDirect(params, APIKEY);
-    else if (path.endsWith("/geo/reverse")) data = await handleGeoReverse(params, APIKEY);
-    else if (path.endsWith("/air")) data = await handleAir(params, APIKEY);
-    else if (path.endsWith("/history")) data = await handleHistory(params);
-    else return buildResponse(404, { error: "Unknown endpoint: " + path });
+  const handlers = {
+    "/geo/direct": (p) => handleGeoDirect(p, APIKEY),
+    "/geo/reverse": (p) => handleGeoReverse(p, APIKEY),
+    "/air": (p) => handleAir(p, APIKEY),
+    "/history": (p) => handleHistory(p)
+  };
 
+  try {
+    const match = Object.keys(handlers).find((key) => path.endsWith(key));
+    if (!match) return buildResponse(404, { error: "Unknown endpoint: " + path });
+    const data = await handlers[match](params);
     return buildResponse(200, data);
   } catch (err) {
     console.error("❌ Error:", err);
