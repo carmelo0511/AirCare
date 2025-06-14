@@ -231,6 +231,16 @@ The backend Lambda function is treated as an external resource. Terraform access
 terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
 ```
 
+If you created core resources manually (for example to bootstrap the S3 backend),
+import them before applying. Replace the placeholders below with the values from
+`terraform.tfvars`:
+
+```bash
+terraform import aws_s3_bucket.frontend_bucket <bucket_name>
+terraform import aws_iam_role.lambda_exec <role_name>
+terraform import aws_dynamodb_table.history_table <table_name>
+```
+
 
 For the CI/CD pipeline to succeed, you must configure several secrets in your
 GitHub repository. These are consumed by the deploy workflow:
