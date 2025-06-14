@@ -174,7 +174,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   statistic           = "Sum"
   threshold           = 1
   dimensions = {
-    FunctionName = data.aws_lambda_function.aircare_backend.function_name
+    FunctionName = aws_lambda_function.aircare_backend.function_name
   }
   alarm_description = "Alarm if AirCare lambda errors >=1 in a minute"
 }
