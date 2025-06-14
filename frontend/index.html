@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#4f46e5" />
+  <link rel="manifest" href="manifest.json" />
   <title>AirCare - Air Quality</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,12 +23,16 @@
       <div class="flex items-center gap-2">
         <button id="loginBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Login</button>
         <button id="logoutBtn" class="px-2 py-1 bg-indigo-500 text-white rounded hidden">Logout</button>
+        <select id="langSelect" class="ml-2 border rounded p-1 text-sm">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+        </select>
       </div>
     </div>
 
     <!-- City selection and geolocation controls -->
     <div class="mb-4 flex flex-col gap-2 relative">
-      <label for="cityInput" class="block font-medium">Choose a city:</label>
+      <label for="cityInput" id="chooseCityLabel" class="block font-medium">Choose a city:</label>
       <!-- Input for manual city search with autocomplete -->
       <input type="text" id="cityInput" placeholder="e.g., London"
         class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-200 transition-all"
@@ -70,7 +76,7 @@
 
     <!-- AQI History Section: recent measurements -->
     <div id="historySection" class="mt-6 hidden transition-all duration-700">
-      <h3 class="text-lg font-semibold mb-2">AQI History</h3>
+      <h3 id="aqiHistoryTitle" class="text-lg font-semibold mb-2">AQI History</h3>
       <canvas id="historyChart" class="w-full h-48 mb-4"></canvas>
       <ul id="historyList" class="text-sm text-gray-700 space-y-2"></ul>
     </div>
@@ -81,5 +87,13 @@
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.46/dist/aws-amplify.min.js"></script>
   <!-- Main JavaScript file for frontend logic -->
   <script type="module" src="app.js"></script>
+  <script type="module" src="i18n.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
 </body>
 </html>

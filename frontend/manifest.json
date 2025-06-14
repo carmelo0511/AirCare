@@ -1,0 +1,8 @@
+{
+  "name": "AirCare",
+  "short_name": "AirCare",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5"
+}

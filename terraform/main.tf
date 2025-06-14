@@ -145,6 +145,26 @@ resource "aws_lambda_permission" "apigw_lambda" {
   source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
 
+resource "aws_cloudwatch_log_group" "lambda_logs" {
+  name              = "/aws/lambda/${aws_lambda_function.aircare_backend.function_name}"
+  retention_in_days = 14
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  alarm_name          = "aircare-error-alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+  dimensions = {
+    FunctionName = aws_lambda_function.aircare_backend.function_name
+  }
+  alarm_description = "Alarm if AirCare lambda errors >=1 in a minute"
+}
+
 resource "aws_dynamodb_table" "history_table" {
   name         = var.dynamodb_table_name
   billing_mode = "PAY_PER_REQUEST"
