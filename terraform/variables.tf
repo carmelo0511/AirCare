@@ -39,3 +39,7 @@ variable "lambda_role_name" {
   type        = string
   default     = "lambda_exec_role"
 }
+
+variable "state_bucket" {
+  description = "S3 bucket name for Terraform state"
+}
