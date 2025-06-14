@@ -8,6 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 📁 Install backend dependencies
+        run: |
+          cd backend
+          npm ci
+      - name: 🧪 Run backend tests
+        run: |
+          cd backend
+          npm test --silent
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
       - name: Terraform Format Check

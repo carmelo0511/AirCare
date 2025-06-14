@@ -49,6 +49,11 @@ jobs:
           cd backend
           npm test --silent
 
+      - name: 🗑️ Remove dev dependencies
+        run: |
+          cd backend
+          npm prune --omit=dev
+
 
       - name: 🗃️ Cache Terraform plugins
         uses: actions/cache@v4
