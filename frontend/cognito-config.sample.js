@@ -1,10 +1,10 @@
 export const COGNITO_CONFIG = {
   Auth: {
-    region: "ca-central-1",
-    userPoolId: "ca-central-1_Q5Ghtpp1y",
-    userPoolWebClientId: "ceq2oj1a2ms76eb8hipkhlius",
+    region: "YOUR_REGION",
+    userPoolId: "YOUR_USER_POOL_ID",
+    userPoolWebClientId: "YOUR_USER_POOL_CLIENT_ID",
     oauth: {
-      domain: "ca-central-1q5ghtpp1y.auth.ca-central-1.amazoncognito.com",
+      domain: "your-domain.auth.region.amazoncognito.com",
       scope: ["openid", "email"],
       redirectSignIn: window.location.origin,
       redirectSignOut: window.location.origin,
