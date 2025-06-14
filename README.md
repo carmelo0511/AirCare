@@ -210,11 +210,23 @@ This regenerates `frontend/config.js` with your endpoint. Because the frontend i
 - AWS IAM roles follow the principle of least privilege
 - No secrets hardcoded in the repo (managed via GitHub Secrets)
 
+## 🛠 Infrastructure as Code
+
+Terraform files reside in [`terraform/`](./terraform). Use the helper script to validate the configuration and list managed resources:
+
+```bash
+cd terraform
+../check_aircare_terraform.sh
+```
+
+Ensure a `lambda.zip` exists in the repository root before running the script.
+
+
 ---
 
 ## 🚧 Upcoming Improvements
 
-- Implement Terraform 
+- Additional monitoring and alerting
 ---
 
 ## License
