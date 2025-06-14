@@ -240,10 +240,9 @@ terraform state list
 
 Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
-If the backend Lambda already exists in your AWS account, import it into the Terraform state before applying. This avoids `ResourceConflictException` errors:
+The backend Lambda function is treated as an external resource. Terraform accesses it via a data source, so no import step is necessary:
 
 ```bash
-terraform import aws_lambda_function.aircare_backend <function_name>
 terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
 ```
 
