@@ -243,7 +243,7 @@ Ensure a `lambda.zip` exists in the repository root before running Terraform com
 If the backend Lambda already exists in your AWS account, import it into the Terraform state before applying. This avoids `ResourceConflictException` errors:
 
 ```bash
-terraform import aws_lambda_function.aircare_backend <function_arn>
+terraform import aws_lambda_function.aircare_backend <function_name>
 terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
 ```
 
