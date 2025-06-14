@@ -93,10 +93,6 @@ jobs:
         working-directory: ./terraform
         run: terraform fmt -check -recursive
 
-      - name: ✅ Terraform Validate
-        working-directory: ./terraform
-        run: terraform validate
-
       - name: 🧱 Terraform Init
         working-directory: ./terraform
         env:
@@ -105,6 +101,10 @@ jobs:
           AWS_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform init -input=false
+
+      - name: ✅ Terraform Validate
+        working-directory: ./terraform
+        run: terraform validate
 
       - name: 🔄 Terraform Import Resources (idempotent)
         working-directory: ./terraform
