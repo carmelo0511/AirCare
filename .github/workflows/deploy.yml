@@ -76,7 +76,7 @@ jobs:
       - name: 📦 Package Lambda
         run: |
           cd backend
-          zip -r ../lambda.zip . -x "*.git*" "*.zip"
+          zip -r ../lambda.zip . -x "*.git*" "*.zip" "tests/*"
           cd ..
 
       - name: 🔍 Verify Lambda package
