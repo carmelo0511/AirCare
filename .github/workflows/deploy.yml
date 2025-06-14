@@ -34,6 +34,13 @@ jobs:
           LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
           OPENWEATHER_APIKEY: ${{ secrets.OPENWEATHER_APIKEY }}
 
+      - name: ☁️ Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
       - name: ⚙️ Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -91,9 +98,6 @@ jobs:
       - name: 🧱 Terraform Init
         working-directory: ./terraform
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform init -input=false
 
@@ -105,10 +109,6 @@ jobs:
       - name: 🚀 Terraform Apply
         working-directory: ./terraform
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
-          AWS_DEFAULT_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform apply -auto-approve
 
@@ -135,10 +135,6 @@ jobs:
               --zip-file fileb://lambda.zip \
               --environment Variables=TABLE_NAME=${{ steps.tfout.outputs.table }},OPENWEATHER_APIKEY=${{ secrets.OPENWEATHER_APIKEY }}
           fi
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
 
       - name: 🔧 Generate frontend config
         env:
@@ -151,16 +147,10 @@ jobs:
           args: --delete
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
           SOURCE_DIR: './frontend'
 
       - name: 🔄 Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
           PATHS: "/*"
