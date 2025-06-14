@@ -184,12 +184,12 @@ AirCare/
    required environment variables are not set, the scripts will copy the sample
    files so the app can still run with placeholder settings:
    ```bash
-   API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
-   COGNITO_REGION=your-region \
-   COGNITO_USER_POOL_ID=pool-id \
-   COGNITO_USER_POOL_CLIENT_ID=client-id \
-   COGNITO_DOMAIN=your-domain.auth.region.amazoncognito.com \
-   node scripts/set-cognito-config.js
+  API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
+  COGNITO_REGION=ca-central-1 \
+  COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id) \
+  COGNITO_USER_POOL_CLIENT_ID=$(terraform output -raw cognito_user_pool_client_id) \
+  COGNITO_DOMAIN=$(terraform output -raw cognito_domain) \
+  node scripts/set-cognito-config.js
    ```
    These scripts read the environment variables above and create `frontend/config.js` and `frontend/cognito-config.js`. If a variable is missing, the corresponding sample file is copied instead.
    Make sure the **Cognito domain** and callback URLs are correctly configured
