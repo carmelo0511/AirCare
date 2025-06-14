@@ -3,7 +3,7 @@ output "cloudfront_url" {
 }
 
 output "lambda_function_name" {
-  value = data.aws_lambda_function.aircare_backend.function_name
+  value = aws_lambda_function.aircare_backend.function_name
 }
 
 output "api_gateway_url" {

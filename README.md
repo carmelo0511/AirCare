@@ -79,6 +79,7 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
   - Enforces English responses from OpenWeather
   - `/history` decodes and normalizes the `location` parameter for reliable lookups
   - API keys and table names are **never hardcoded** (managed with environment variables)
+
 - **How to deploy:**  
   1. Edit the code in [`backend/index.js`](./backend/index.js)  
 2. Remove development dependencies with `npm prune --omit=dev`, then zip the
@@ -86,6 +87,7 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
    Lambda (or let CI/CD handle it). This produces a `lambda.zip` archive in the
    repository root used for deployment.
 3. See comments in [`backend/index.js`](./backend/index.js) for full code explanations
+
 
 ---
 
@@ -228,10 +230,10 @@ terraform state list
 
 Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
-The backend Lambda function is treated as an external resource. Terraform accesses it via a data source, so no import step is necessary:
+Terraform now provisions the Lambda function directly, so simply run:
 
 ```bash
-terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
+terraform apply
 ```
 
 If you created core resources manually (for example to bootstrap the S3 backend),
@@ -239,6 +241,7 @@ import them before applying. Replace the placeholders below with the values from
 `terraform.tfvars`:
 
 ```bash
+terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
 terraform import aws_s3_bucket.frontend_bucket <bucket_name>
 terraform import aws_iam_role.lambda_exec <role_name>
 terraform import aws_dynamodb_table.history_table <table_name>
