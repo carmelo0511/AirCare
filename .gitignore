@@ -1,3 +1,14 @@
 node_modules/
 backend/node_modules/
 lambda.zip
+# Terraform state files
+terraform.tfstate
+terraform.tfstate.*
+
+# Terraform plans
+plan.txt
+tfplan
+
+# Local helper scripts
+check_aircare_terraform.sh
+import_all.sh
