@@ -135,17 +135,16 @@ resource "aws_api_gateway_stage" "prod" {
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
-  statement_id  = "AllowAPIGatewayInvoke-v2"
+  # Use a prefix to avoid conflicts if a permission with the same
+  # statement id already exists. Terraform will store the generated
+  # id in the state so subsequent applies reuse it.
+  statement_id_prefix = "AllowAPIGatewayInvoke-"
   action        = "lambda:InvokeFunction"
   function_name = data.aws_lambda_function.aircare_backend.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
 
-resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/${data.aws_lambda_function.aircare_backend.function_name}"
-  retention_in_days = 14
-}
 
 resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
   alarm_name          = "aircare-error-alarm"
