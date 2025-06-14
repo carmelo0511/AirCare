@@ -180,7 +180,9 @@ AirCare/
    ```bash
    npm test
    ```
-6. Generate the frontend configuration files from the provided samples:
+6. Generate the frontend configuration files from the provided samples. If the
+   required environment variables are not set, the scripts will copy the sample
+   files so the app can still run with placeholder settings:
    ```bash
    API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
    COGNITO_REGION=your-region \
@@ -189,7 +191,7 @@ AirCare/
    COGNITO_DOMAIN=your-domain.auth.region.amazoncognito.com \
    node scripts/set-cognito-config.js
    ```
-   These scripts read the environment variables above and create `frontend/config.js` and `frontend/cognito-config.js`.
+   These scripts read the environment variables above and create `frontend/config.js` and `frontend/cognito-config.js`. If a variable is missing, the corresponding sample file is copied instead.
    Make sure the **Cognito domain** and callback URLs are correctly configured
    in the AWS console. If they don't match your site URL, the Hosted UI shows
    "Something went wrong. An error was encountered with the requested page.".
