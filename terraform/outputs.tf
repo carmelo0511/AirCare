@@ -18,14 +18,3 @@ output "lambda_role_arn" {
   value = aws_iam_role.lambda_exec.arn
 }
 
-output "cognito_user_pool_id" {
-  value = aws_cognito_user_pool.aircare.id
-}
-
-output "cognito_user_pool_client_id" {
-  value = aws_cognito_user_pool_client.aircare_client.id
-}
-
-output "cognito_domain" {
-  value = aws_cognito_user_pool_domain.aircare_domain.domain
-}

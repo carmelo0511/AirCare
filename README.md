@@ -56,7 +56,6 @@ Below is a screenshot showing the CloudWatch Dashboard and alarm configuration l
 🌐 API Gateway: Handles endpoints /air, /geo/direct, /geo/reverse, /history
 🗃️ DynamoDB: Stores AQI history for analytics & dashboards
 🔒 API key secured (OpenWeatherMap) via Lambda proxy
-🔐 Amazon Cognito: Manages user authentication & authorization
 🔍 CloudWatch logs for backend observability
 ⚠️ CloudWatch Alarm + SNS Email alert on Lambda error
 📦 S3: Static assets hosting
@@ -97,7 +96,6 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
 - 📄 Shows a message when no history is available
 - 🔐 Secure server-side OpenWeather API access
 - 🌐 Clean UI/UX with Tailwind CSS
-- 🔑 User authentication powered by Amazon Cognito
 - 📲 Installable Progressive Web App (PWA) with offline support
 - 🌍 English/French interface selector
 - 🔔 Optional push notifications when pollution is high
@@ -140,10 +138,8 @@ AirCare/
 │   └── tests/             # Backend unit tests
 ├── frontend/              # HTML/CSS/JavaScript
 │   ├── config.sample.js          # placeholder API endpoint
-│   └── cognito-config.sample.js  # placeholder Cognito settings
-│       # run scripts/set-api-url.js and scripts/set-cognito-config.js to create
-│       # the real config files
-├── scripts/               # Helper scripts to configure API and Cognito
+│       # run scripts/set-api-url.js to create the real config file
+├── scripts/               # Helper scripts to configure the API
 ├── .github/workflows/     # CI/CD with GitHub Actions
 ├── LICENSE
 └── README.md              # This file
@@ -181,26 +177,15 @@ AirCare/
    npm test
    ```
 6. Generate the frontend configuration files from the provided samples. If the
-   required environment variables are not set, the scripts will copy the sample
-   files so the app can still run with placeholder settings:
+   required environment variables are not set, the script will copy the sample
+   file so the app can still run with placeholder settings:
    ```bash
   API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
-  COGNITO_REGION=ca-central-1 \
-  COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id) \
-  COGNITO_USER_POOL_CLIENT_ID=$(terraform output -raw cognito_user_pool_client_id) \
-  COGNITO_DOMAIN=$(terraform output -raw cognito_domain) \
-  node scripts/set-cognito-config.js
    ```
-   These scripts read the environment variables above and create `frontend/config.js` and `frontend/cognito-config.js`. If a variable is missing, the corresponding sample file is copied instead.
-   Make sure the **Cognito domain** and callback URLs are correctly configured
-   in the AWS console. If they don't match your site URL, the Hosted UI shows
-   "Something went wrong. An error was encountered with the requested page.".
-   After adjusting the domain or URLs, rerun the command above to regenerate
-   `frontend/cognito-config.js`.
+   This script reads the environment variable above and creates `frontend/config.js`.
 7. Serve the frontend locally from the project root. The helper script below
    (re)generates `frontend/config.js` every time so the API endpoint matches
-   the `API_BASE_URL` environment variable. It also writes
-   `frontend/cognito-config.js` when the Cognito variables are present:
+   the `API_BASE_URL` environment variable:
    ```bash
    node scripts/dev-server.js
    ```
