@@ -26,6 +26,7 @@ const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const langSelect = document.getElementById('langSelect');
 const themeToggle = document.getElementById('themeToggle');
+const offlineNotice = document.getElementById('offlineNotice');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -237,6 +238,16 @@ if (themeToggle) {
   });
   applyTheme();
 }
+
+// --- Offline notice ---
+function updateOnlineStatus() {
+  if (offlineNotice) {
+    offlineNotice.classList.toggle('hidden', navigator.onLine);
+  }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
 
 // --- City Autocomplete Logic ---
 

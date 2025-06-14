@@ -31,6 +31,8 @@ export function setLanguage(lang) {
   document.getElementById('loginBtn').textContent = t.login;
   document.getElementById('logoutBtn').textContent = t.logout;
   document.getElementById('aqiHistoryTitle').textContent = t.aqiHistory;
+  const offlineEl = document.getElementById('offlineNotice');
+  if (offlineEl) offlineEl.textContent = t.offline;
 }
 
 export function getCurrentLanguage() {
