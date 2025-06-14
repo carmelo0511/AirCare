@@ -89,6 +89,9 @@ jobs:
       - name: 🔄 Terraform Import Resources (idempotent)
         working-directory: ./terraform
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: |
           terraform import aws_s3_bucket.frontend_bucket "${{ secrets.AWS_S3_BUCKET }}" || true
@@ -99,6 +102,9 @@ jobs:
       - name: 🚀 Terraform Apply
         working-directory: ./terraform
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform apply -auto-approve
 
