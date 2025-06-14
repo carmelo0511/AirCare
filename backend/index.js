@@ -17,38 +17,12 @@ const ddb = DynamoDBDocumentClient.from(ddbClient);
 // DynamoDB table name from Lambda environment variable (default fallback)
 const TABLE_NAME = process.env.TABLE_NAME || "AirCareHistoryAQI";
 
-// Map of AQI values to health advice strings
-const ADVICE_MAP = {
-  1: "Good quality",
-  2: "Acceptable quality",
-  3: "Increased sensitivity",
-  4: "High pollution",
-  5: "Dangerous for health"
-};
-
-function getAdvice(aqi) {
-  return ADVICE_MAP[aqi] || "Unknown";
-}
-
-// Build a standard API Gateway response with CORS headers
-function buildResponse(statusCode, body) {
-  return {
-    statusCode,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "OPTIONS,GET"
-    },
-    body: JSON.stringify(body)
-  };
-}
-
-// Helper to fetch JSON from OpenWeatherMap with English responses
-async function fetchJsonWithEnglish(url) {
-  const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-  if (!res.ok) throw new Error(res.statusText);
-  return res.json();
-}
+const {
+  getAdvice,
+  buildResponse,
+  fetchJsonWithEnglish,
+  normalizeCoordinate
+} = require("./utils");
 
 // --- Endpoint handlers ---
 async function handleGeoDirect(params, APIKEY) {
@@ -90,8 +64,8 @@ async function handleAir(params, APIKEY) {
     longitude = lon;
   }
 
-  latitude = Number(parseFloat(latitude).toFixed(2));
-  longitude = Number(parseFloat(longitude).toFixed(2));
+  latitude = normalizeCoordinate(latitude);
+  longitude = normalizeCoordinate(longitude);
 
   const apiUrl =
     `https://api.openweathermap.org/data/2.5/air_pollution?lat=${latitude}&lon=${longitude}&lang=en&appid=${APIKEY}`;
@@ -144,8 +118,8 @@ async function handleHistory(params) {
   let locValue = decodeURIComponent(location);
   if (/^[-\d.]+,[-\d.]+$/.test(locValue)) {
     const [latStr, lonStr] = locValue.split(',');
-    const normLat = Number(parseFloat(latStr).toFixed(2));
-    const normLon = Number(parseFloat(lonStr).toFixed(2));
+    const normLat = normalizeCoordinate(latStr);
+    const normLon = normalizeCoordinate(lonStr);
     locValue = `${normLat},${normLon}`;
   }
 
