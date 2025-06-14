@@ -113,6 +113,8 @@ jobs:
 
       - name: 📤 Lookup infrastructure details
         id: infra
+        env:
+          AWS_REGION: ca-central-1
         run: |
           api_id=$(aws apigateway get-rest-apis --query "items[?name=='AirCare API'].id" --output text)
           api="https://${api_id}.execute-api.ca-central-1.amazonaws.com/prod"
@@ -125,6 +127,8 @@ jobs:
           echo "function_name=${function_name}" >> "$GITHUB_OUTPUT"
 
       - name: 🚀 Deploy Lambda function
+        env:
+          AWS_REGION: ca-central-1
         run: |
           fname="${{ steps.infra.outputs.function_name }}"
           if aws lambda get-function --function-name "$fname" >/dev/null 2>&1; then
