@@ -50,10 +50,20 @@ async function fetchJson(url) {
   return res.json();
 }
 
+function buildApiUrl(route, params = {}) {
+  const url = new URL(route.startsWith('/') ? route : `/${route}`, apiBaseUrl);
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null) {
+      url.searchParams.set(k, v);
+    }
+  });
+  return url.toString();
+}
+
 async function fetchAirData(lat, lon, userId) {
   try {
-    const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
-    return await fetchJson(`${apiBaseUrl}/air?lat=${lat}&lon=${lon}${userParam}`);
+    const url = buildApiUrl('/air', { lat, lon, ...(userId ? { userId } : {}) });
+    return await fetchJson(url);
   } catch (err) {
     throw new Error(`Failed to fetch air data: ${err.message}`);
   }
@@ -61,8 +71,11 @@ async function fetchAirData(lat, lon, userId) {
 
 async function fetchHistoryData(lat, lon, userId) {
   try {
-    const userParam = userId ? `&userId=${encodeURIComponent(userId)}` : '';
-    return await fetchJson(`${apiBaseUrl}/history?location=${encodeURIComponent(lat + ',' + lon)}${userParam}`);
+    const url = buildApiUrl('/history', {
+      location: `${lat},${lon}`,
+      ...(userId ? { userId } : {})
+    });
+    return await fetchJson(url);
   } catch (err) {
     throw new Error(`Failed to fetch history data: ${err.message}`);
   }
@@ -218,7 +231,9 @@ cityInput.addEventListener('input', () => {
   debounceTimeout = setTimeout(async () => {
     try {
       // Calls the /geo/direct endpoint to fetch city suggestions
-      const res = await fetch(`${apiBaseUrl}/geo/direct?q=${encodeURIComponent(query)}&limit=5`);
+      const res = await fetch(
+        buildApiUrl('/geo/direct', { q: query, limit: 5 })
+      );
       const data = await res.json();
       if (!data.length) return;
 
@@ -253,7 +268,9 @@ document.addEventListener('click', (e) => {
 // Resolves a pair of coordinates (lat, lon) to a city name, using the backend /geo/reverse endpoint.
 async function getCityNameFromCoords(lat, lon) {
   try {
-    const res = await fetch(`${apiBaseUrl}/geo/reverse?lat=${lat}&lon=${lon}&limit=1`);
+    const res = await fetch(
+      buildApiUrl('/geo/reverse', { lat, lon, limit: 1 })
+    );
     const data = await res.json();
     if (data && data[0]) {
       const name = data[0].local_names && data[0].local_names.en ? data[0].local_names.en : data[0].name;
@@ -310,7 +327,7 @@ async function fetchAirByCity(city) {
   try {
     // Fetch coordinates for the provided city name using /geo/direct
     const geoData = await fetchJson(
-      `${apiBaseUrl}/geo/direct?q=${encodeURIComponent(city)}&limit=1`
+      buildApiUrl('/geo/direct', { q: city, limit: 1 })
     );
     if (!geoData.length) throw new Error("City not found.");
     const { lat, lon, name, country, local_names } = geoData[0];
