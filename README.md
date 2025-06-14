@@ -212,14 +212,16 @@ This regenerates `frontend/config.js` with your endpoint. Because the frontend i
 
 ## 🛠 Infrastructure as Code
 
-Terraform files reside in [`terraform/`](./terraform). Use the helper script to validate the configuration and list managed resources:
+Terraform files reside in [`terraform/`](./terraform). From that directory you can initialize, validate and inspect the managed resources:
 
 ```bash
 cd terraform
-../check_aircare_terraform.sh
+terraform init -upgrade -input=false
+terraform validate
+terraform state list
 ```
 
-Ensure a `lambda.zip` exists in the repository root before running the script.
+Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
 
 ---
