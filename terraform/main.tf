@@ -93,8 +93,8 @@ resource "aws_lambda_function" "aircare_backend" {
   source_code_hash = try(filebase64sha256("../lambda.zip"), "")
   environment {
     variables = {
-      TABLE_NAME = var.dynamodb_table_name
-      API_KEY    = var.openweather_api_key
+      TABLE_NAME         = var.dynamodb_table_name
+      OPENWEATHER_APIKEY = var.openweather_api_key
     }
   }
   depends_on = [aws_iam_role.lambda_exec]
