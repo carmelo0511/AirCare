@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = var.state_bucket
+    bucket = "aircare-frontend-bryannakache"
     key    = "terraform/terraform.tfstate"
-    region = var.region
+    region = "ca-central-1"
   }
 }
