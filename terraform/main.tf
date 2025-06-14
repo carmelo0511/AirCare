@@ -26,7 +26,7 @@ resource "aws_s3_bucket_policy" "frontend_policy" {
         Principal = {
           AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
         },
-        Action = "s3:GetObject",
+        Action   = "s3:GetObject",
         Resource = "${aws_s3_bucket.frontend_bucket.arn}/*"
       }
     ]
@@ -56,8 +56,8 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 resource "aws_iam_role_policy" "lambda_logs" {
-  name   = "lambda-logs-policy"
-  role   = aws_iam_role.lambda_exec.id
+  name = "lambda-logs-policy"
+  role = aws_iam_role.lambda_exec.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -129,6 +129,7 @@ resource "aws_api_gateway_deployment" "aircare_deployment" {
     aws_api_gateway_integration.history,
     aws_api_gateway_method.history
   ]
+}
 
 resource "aws_api_gateway_stage" "prod" {
   stage_name    = var.stage_name
@@ -209,10 +210,6 @@ resource "aws_cloudfront_distribution" "aircare_distribution" {
   tags = {
     Project = "AirCare"
   }
-}
-resource "aws_cloudfront_distribution" "invalidate" {
-  distribution_id = aws_cloudfront_distribution.aircare_distribution.id
-  paths           = ["/*"]
 }
 
 resource "aws_api_gateway_resource" "air_resource" {
