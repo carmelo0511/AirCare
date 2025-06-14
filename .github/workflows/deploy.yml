@@ -130,6 +130,16 @@ jobs:
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform apply -auto-approve
 
+      - name: 🚀 Deploy Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://lambda.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
+
       - name: 📤 Get API Gateway URL
         id: tfout
         working-directory: ./terraform
@@ -159,13 +169,3 @@ jobs:
           AWS_REGION: 'ca-central-1'
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
           PATHS: "/*"
-
-      - name: 🚀 Deploy Lambda function
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://lambda.zip
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
