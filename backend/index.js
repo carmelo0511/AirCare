@@ -163,7 +163,9 @@ exports.handler = async (event) => {
   // Retrieve API key from environment variables
   const APIKEY = getApiKey();
   if (!APIKEY) {
-    return buildResponse(500, { error: "Missing OPENWEATHER_APIKEY/API_KEY" });
+    return buildResponse(500, {
+      error: "Missing OPENWEATHER_APIKEY/OPENWEATHER_API_KEY/API_KEY",
+    });
   }
 
   const path = event.resource || event.requestContext?.http?.path || event.path;
