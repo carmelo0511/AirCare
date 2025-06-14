@@ -202,7 +202,8 @@ AirCare/
    `frontend/cognito-config.js`.
 8. Serve the frontend locally from the project root. The helper script below
    (re)generates `frontend/config.js` every time so the API endpoint matches
-   the `API_BASE_URL` environment variable:
+   the `API_BASE_URL` environment variable. It also writes
+   `frontend/cognito-config.js` when the Cognito variables are present:
    ```bash
    node scripts/dev-server.js
    ```
