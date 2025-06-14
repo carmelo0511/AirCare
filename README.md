@@ -236,9 +236,15 @@ terraform state list
 
 Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
-For the CI/CD pipeline to succeed, set an `OPENWEATHER_APIKEY` secret in your
-GitHub repository. This secret provides the API key required by Terraform and
-the Lambda function.
+For the CI/CD pipeline to succeed, you must configure several secrets in your
+GitHub repository. These are consumed by the deploy workflow:
+
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` – credentials for deploying
+  infrastructure and uploading the Lambda archive.
+- `AWS_S3_BUCKET` – destination S3 bucket for the frontend.
+- `CLOUDFRONT_DIST_ID` – distribution to invalidate after an upload.
+- `LAMBDA_FUNCTION_NAME` – name of the backend Lambda function.
+- `OPENWEATHER_APIKEY` – API key passed to Terraform and the Lambda runtime.
 
 
 ---
