@@ -239,6 +239,13 @@ terraform state list
 
 Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
+If the backend Lambda already exists in your AWS account, import it into the Terraform state before applying. This avoids `ResourceConflictException` errors:
+
+```bash
+terraform import aws_lambda_function.aircare_backend <function_arn>
+```
+
+
 For the CI/CD pipeline to succeed, you must configure several secrets in your
 GitHub repository. These are consumed by the deploy workflow:
 
