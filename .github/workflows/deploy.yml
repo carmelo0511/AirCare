@@ -106,6 +106,11 @@ jobs:
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         run: |
+          # Remove existing resources from the state before re-importing to
+          # avoid errors if they are already managed
+          terraform state rm aws_s3_bucket.frontend_bucket || true
+          terraform state rm aws_iam_role.lambda_exec || true
+          terraform state rm aws_dynamodb_table.history_table || true
           terraform import aws_s3_bucket.frontend_bucket $AWS_S3_BUCKET
           terraform import aws_iam_role.lambda_exec lambda_exec_role
           terraform import aws_dynamodb_table.history_table AirCareHistoryAQI
