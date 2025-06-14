@@ -100,6 +100,16 @@ jobs:
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform init -input=false
 
+      - name: 🔄 Terraform Import existing infra
+        working-directory: ./terraform
+        env:
+          TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        run: |
+          terraform import aws_s3_bucket.frontend_bucket $AWS_S3_BUCKET
+          terraform import aws_iam_role.lambda_exec lambda_exec_role
+          terraform import aws_dynamodb_table.history_table AirCareHistoryAQI
+
       - name: ✅ Terraform Validate
         working-directory: ./terraform
         run: terraform validate
