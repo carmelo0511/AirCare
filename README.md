@@ -180,12 +180,7 @@ AirCare/
    ```bash
    npm test
    ```
-6. Install the frontend dependencies and run the end-to-end tests:
-   ```bash
-   npm install --prefix frontend
-   npm run test:e2e --prefix frontend
-   ```
-7. Generate the frontend configuration files from the provided samples:
+6. Generate the frontend configuration files from the provided samples:
    ```bash
    API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
    COGNITO_REGION=your-region \
@@ -200,7 +195,7 @@ AirCare/
    "Something went wrong. An error was encountered with the requested page.".
    After adjusting the domain or URLs, rerun the command above to regenerate
    `frontend/cognito-config.js`.
-8. Serve the frontend locally from the project root. The helper script below
+7. Serve the frontend locally from the project root. The helper script below
    (re)generates `frontend/config.js` every time so the API endpoint matches
    the `API_BASE_URL` environment variable. It also writes
    `frontend/cognito-config.js` when the Cognito variables are present:
