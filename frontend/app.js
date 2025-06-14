@@ -14,7 +14,6 @@ try {
 }
 
 import { signIn, signOut, getCurrentUser } from './auth.js';
-import { setLanguage, getCurrentLanguage } from './i18n.js';
 const apiBaseUrl = API_BASE_URL;
 
 // --- DOM elements ---
@@ -34,8 +33,7 @@ const historyList = document.getElementById('historyList');
 const historyChartEl = document.getElementById('historyChart');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
-const langSelect = document.getElementById('langSelect');
-const themeToggle = document.getElementById('themeToggle');
+// Removed language selector and theme toggle elements
 const offlineNotice = document.getElementById('offlineNotice');
 
 // Used for debouncing autocomplete requests
@@ -223,31 +221,9 @@ if (loginBtn && logoutBtn) {
   updateAuthUI();
 }
 
-if (langSelect) {
-  langSelect.addEventListener('change', () => {
-    setLanguage(langSelect.value);
-  });
-  setLanguage(getCurrentLanguage());
-}
 
-// --- Theme toggle ---
-function applyTheme() {
-  const dark = localStorage.getItem('darkMode') === '1';
-  document.body.classList.toggle('dark', dark);
-  if (themeToggle) {
-    themeToggle.textContent = dark ? 'Light' : 'Dark';
-  }
-}
 
-if (themeToggle) {
-  themeToggle.addEventListener('click', () => {
-    const dark = !document.body.classList.contains('dark');
-    document.body.classList.toggle('dark', dark);
-    localStorage.setItem('darkMode', dark ? '1' : '0');
-    themeToggle.textContent = dark ? 'Light' : 'Dark';
-  });
-  applyTheme();
-}
+// Dark mode functionality removed
 
 // --- Offline notice ---
 function updateOnlineStatus() {
