@@ -1,8 +1,18 @@
 // === AirCare Frontend Main Script ===
 
 // API base URL is provided by config.js so deployments can change the
-// backend endpoint without modifying this file.
-import { API_BASE_URL } from './config.js';
+// backend endpoint without modifying this file. If the file is missing
+// or inaccessible (e.g., 403 from CloudFront), fall back to a sensible
+// default so the application still loads.
+let API_BASE_URL = 'https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod';
+try {
+  // Top-level await works because this script is loaded as a module.
+  const cfg = await import('./config.js');
+  API_BASE_URL = cfg.API_BASE_URL;
+} catch (err) {
+  console.warn('config.js not found, using default API URL');
+}
+
 import { signIn, signOut, getCurrentUser } from './auth.js';
 import { setLanguage, getCurrentLanguage } from './i18n.js';
 const apiBaseUrl = API_BASE_URL;
