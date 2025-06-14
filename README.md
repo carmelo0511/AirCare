@@ -96,6 +96,11 @@ All AWS Lambda source code is included in the [`backend/`](./backend/) folder.
 - 🔐 Secure server-side OpenWeather API access
 - 🌐 Clean UI/UX with Tailwind CSS
 - 🔑 User authentication powered by Amazon Cognito
+- 📲 Installable Progressive Web App (PWA) with offline support
+- 🌍 English/French interface selector
+- 🔔 Optional push notifications when pollution is high
+
+Visit the site on mobile or desktop and choose **“Add to Home Screen”** to install the app for offline use.
 
 ---
 
@@ -118,6 +123,7 @@ This project is fully deployed on **AWS**:
 - 🧠 Structured **CloudWatch logs** on every request
 - ⚠️ **CloudWatch Alarm** triggered on ≥ 1 error/minute
 - 📧 Email notifications via **SNS**
+- 📈 Additional Lambda duration and error metrics dashboard
 - 📉 AQI history stored and visualizable via **DynamoDB**
 
 ---
@@ -163,12 +169,17 @@ AirCare/
    ```bash
    npm test
    ```
-6. Set the API endpoint for the frontend:
+6. Install the frontend dependencies and run the end-to-end tests:
+   ```bash
+   npm install --prefix frontend
+   npm run test:e2e --prefix frontend
+   ```
+7. Set the API endpoint for the frontend:
    ```bash
    API_BASE_URL=https://i5x97gj43e.execute-api.ca-central-1.amazonaws.com/prod node scripts/set-api-url.js
    ```
    This creates `frontend/config.js`.
-7. Generate the Cognito configuration for the frontend:
+8. Generate the Cognito configuration for the frontend:
    ```bash
    COGNITO_REGION=your-region \
    COGNITO_USER_POOL_ID=pool-id \
@@ -181,7 +192,7 @@ AirCare/
    “Something went wrong. An error was encountered with the requested page.”
    After adjusting the domain or URLs, rerun the script above to regenerate
    `frontend/cognito-config.js`.
-8. Serve the frontend locally from the project root. The helper script below
+9. Serve the frontend locally from the project root. The helper script below
    (re)generates `frontend/config.js` every time so the API endpoint matches
    the `API_BASE_URL` environment variable:
    ```bash
@@ -228,7 +239,7 @@ Ensure a `lambda.zip` exists in the repository root before running Terraform com
 
 ## 🚧 Upcoming Improvements
 
-- Additional monitoring and alerting
+None at the moment.
 ---
 
 ## License

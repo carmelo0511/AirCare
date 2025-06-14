@@ -4,6 +4,7 @@
 // backend endpoint without modifying this file.
 import { API_BASE_URL } from './config.js';
 import { signIn, signOut, getCurrentUser } from './auth.js';
+import { setLanguage, getCurrentLanguage } from './i18n.js';
 const apiBaseUrl = API_BASE_URL;
 
 // --- DOM elements ---
@@ -23,6 +24,7 @@ const historyList = document.getElementById('historyList');
 const historyChartEl = document.getElementById('historyChart');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
+const langSelect = document.getElementById('langSelect');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -74,6 +76,19 @@ function renderAirInfo(cityLabel, aqi) {
   recommendation.innerHTML = `<b>Advice:</b> ${info.advice}`;
   emojiDisplay.textContent = info.emoji;
   showResult(true);
+
+  if (aqi >= 4 && 'Notification' in window) {
+    const send = () => new Notification('High pollution alert', {
+      body: `${cityLabel}: ${info.label}`
+    });
+    if (Notification.permission === 'granted') {
+      send();
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission(p => {
+        if (p === 'granted') send();
+      });
+    }
+  }
 }
 
 function renderHistory(history) {
@@ -181,6 +196,13 @@ if (loginBtn && logoutBtn) {
     updateAuthUI();
   });
   updateAuthUI();
+}
+
+if (langSelect) {
+  langSelect.addEventListener('change', () => {
+    setLanguage(langSelect.value);
+  });
+  setLanguage(getCurrentLanguage());
 }
 
 // --- City Autocomplete Logic ---
