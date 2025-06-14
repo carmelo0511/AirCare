@@ -117,7 +117,7 @@ jobs:
           api_id=$(aws apigateway get-rest-apis --query "items[?name=='AirCare API'].id" --output text)
           api="https://${api_id}.execute-api.ca-central-1.amazonaws.com/prod"
           echo "api=${api}" >> "$GITHUB_OUTPUT"
-          table=$(grep dynamodb_table_name terraform/terraform.tfvars | awk '{print $3}')
+          table=$(grep dynamodb_table_name terraform/terraform.tfvars | awk '{print $3}' | tr -d '"')
           echo "table=${table}" >> "$GITHUB_OUTPUT"
           role=$(aws iam get-role --role-name lambda_exec_role --query 'Role.Arn' --output text)
           echo "role=${role}" >> "$GITHUB_OUTPUT"
