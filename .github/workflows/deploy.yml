@@ -121,29 +121,6 @@ jobs:
           echo "api=${api}" >> "$GITHUB_OUTPUT"
           table=$(grep dynamodb_table_name terraform/terraform.tfvars | awk '{print $3}' | tr -d '"')
           echo "table=${table}" >> "$GITHUB_OUTPUT"
-          role=$(aws iam get-role --role-name lambda_exec_role --query 'Role.Arn' --output text)
-          echo "role=${role}" >> "$GITHUB_OUTPUT"
-          function_name=$(grep lambda_function_name terraform/terraform.tfvars | awk '{print $3}' | tr -d '"')
-          echo "function_name=${function_name}" >> "$GITHUB_OUTPUT"
-
-      - name: 🚀 Deploy Lambda function
-        env:
-          AWS_REGION: ca-central-1
-        run: |
-          fname="${{ steps.infra.outputs.function_name }}"
-          if aws lambda get-function --function-name "$fname" >/dev/null 2>&1; then
-            aws lambda update-function-code \
-              --function-name "$fname" \
-              --zip-file fileb://lambda.zip
-          else
-            aws lambda create-function \
-              --function-name "$fname" \
-              --runtime nodejs18.x \
-              --role ${{ steps.infra.outputs.role }} \
-              --handler index.handler \
-              --zip-file fileb://lambda.zip \
-              --environment Variables=TABLE_NAME=${{ steps.infra.outputs.table }},OPENWEATHER_APIKEY=${{ secrets.OPENWEATHER_APIKEY }}
-          fi
 
       - name: 🔧 Generate frontend config
         env:

@@ -91,8 +91,26 @@ resource "aws_iam_role_policy" "lambda_logs" {
     ]
   })
 }
-data "aws_lambda_function" "aircare_backend" {
-  function_name = var.lambda_function_name
+
+locals {
+  lambda_arn        = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${var.lambda_function_name}"
+  lambda_invoke_arn = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${local.lambda_arn}/invocations"
+}
+
+resource "aws_lambda_function" "aircare_backend" {
+  function_name    = var.lambda_function_name
+  filename         = "${path.module}/../lambda.zip"
+  source_code_hash = filebase64sha256("${path.module}/../lambda.zip")
+  handler          = "index.handler"
+  runtime          = "nodejs18.x"
+  role             = aws_iam_role.lambda_exec.arn
+
+  environment {
+    variables = {
+      TABLE_NAME         = aws_dynamodb_table.history_table.name
+      OPENWEATHER_APIKEY = var.openweather_api_key
+    }
+  }
 }
 
 resource "aws_api_gateway_rest_api" "aircare_api" {
@@ -106,7 +124,7 @@ resource "aws_api_gateway_integration" "air_integration" {
   http_method             = aws_api_gateway_method.air_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = local.lambda_invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "aircare_deployment" {
@@ -140,7 +158,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
   # id in the state so subsequent applies reuse it.
   statement_id_prefix = "AllowAPIGatewayInvoke-"
   action              = "lambda:InvokeFunction"
-  function_name       = data.aws_lambda_function.aircare_backend.function_name
+  function_name       = aws_lambda_function.aircare_backend.function_name
   principal           = "apigateway.amazonaws.com"
   source_arn          = "arn:aws:execute-api:${var.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.aircare_api.id}/*/*"
 }
@@ -265,7 +283,7 @@ resource "aws_api_gateway_integration" "geo_direct" {
   http_method             = aws_api_gateway_method.geo_direct.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = local.lambda_invoke_arn
 }
 
 resource "aws_api_gateway_resource" "geo_reverse" {
@@ -287,7 +305,7 @@ resource "aws_api_gateway_integration" "geo_reverse" {
   http_method             = aws_api_gateway_method.geo_reverse.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = local.lambda_invoke_arn
 }
 
 resource "aws_api_gateway_resource" "history" {
@@ -309,5 +327,5 @@ resource "aws_api_gateway_integration" "history" {
   http_method             = aws_api_gateway_method.history.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = data.aws_lambda_function.aircare_backend.invoke_arn
+  uri                     = local.lambda_invoke_arn
 }
