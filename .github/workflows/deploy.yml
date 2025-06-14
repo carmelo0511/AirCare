@@ -63,25 +63,6 @@ jobs:
             .terraform
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
 
-      - name: ☁️ Sync S3 bucket (frontend)
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
-          SOURCE_DIR: './frontend'
-
-      - name: 🔄 Invalidate CloudFront cache
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'ca-central-1'
-          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
-          PATHS: "/*"
 
       - name: 🧰 Install zip tool
         run: sudo apt-get update && sudo apt-get install -y zip
@@ -134,6 +115,36 @@ jobs:
           AWS_REGION: 'ca-central-1'
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform apply -auto-approve
+
+      - name: 📤 Get API Gateway URL
+        id: tfout
+        working-directory: ./terraform
+        run: echo "api=$(terraform output -raw api_gateway_url)" >> $GITHUB_OUTPUT
+
+      - name: 🔧 Generate frontend config
+        env:
+          API_BASE_URL: ${{ steps.tfout.outputs.api }}
+        run: node scripts/set-api-url.js
+
+      - name: ☁️ Sync S3 bucket (frontend)
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
+          SOURCE_DIR: './frontend'
+
+      - name: 🔄 Invalidate CloudFront cache
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'ca-central-1'
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
+          PATHS: "/*"
 
       - name: 🚀 Deploy Lambda function
         run: |
