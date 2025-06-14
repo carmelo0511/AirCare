@@ -255,8 +255,10 @@ GitHub repository. These are consumed by the deploy workflow:
 - `AWS_S3_BUCKET` – destination S3 bucket for the frontend.
 - `CLOUDFRONT_DIST_ID` – ID of the CloudFront distribution to import and
   invalidate after each upload.
-- `LAMBDA_FUNCTION_NAME` – name of the backend Lambda function.
 - `OPENWEATHER_APIKEY` – API key passed to Terraform and the Lambda runtime.
+
+The name of the Lambda function itself is defined in `terraform/terraform.tfvars`
+under the `lambda_function_name` variable, so no additional secret is required.
 
 
 ---
