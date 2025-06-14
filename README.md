@@ -159,11 +159,14 @@ AirCare/
    npm install
    ```
 3. Set your OpenWeatherMap API key in the `OPENWEATHER_APIKEY` environment variable
-   (or `API_KEY` if deploying via Terraform):
+   (or `API_KEY` if deploying via Terraform). `OPENWEATHER_API_KEY` is also
+   supported for convenience:
    ```bash
    export OPENWEATHER_APIKEY=your_api_key
    # or
    export API_KEY=your_api_key
+   # or
+   export OPENWEATHER_API_KEY=your_api_key
    ```
 4. (Optional) Set the DynamoDB table name used by the Lambda via `TABLE_NAME`.
    If not set, it defaults to **AirCareHistoryAQI**:
