@@ -34,13 +34,13 @@ resource "aws_iam_role" "lambda_exec" {
 }
 
 resource "aws_lambda_function" "aircare_backend" {
-  filename         = "../lambda/lambda.zip"
+  filename         = "../lambda.zip"
   function_name    = var.lambda_function_name
   role             = aws_iam_role.lambda_exec.arn
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   timeout          = 10
-  source_code_hash = filebase64sha256("../lambda/lambda.zip")
+  source_code_hash = filebase64sha256("../lambda.zip")
   environment {
     variables = {
       TABLE_NAME = var.dynamodb_table_name
