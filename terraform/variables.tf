@@ -44,19 +44,3 @@ variable "state_bucket" {
   description = "S3 bucket name for Terraform state"
 }
 
-variable "cognito_user_pool_name" {
-  description = "Name of the Cognito User Pool"
-  type        = string
-  default     = "AirCareUserPool"
-}
-
-variable "cognito_user_pool_client_name" {
-  description = "Name of the Cognito User Pool client"
-  type        = string
-  default     = "aircare-client"
-}
-
-variable "cognito_domain_prefix" {
-  description = "Prefix for the Cognito hosted UI domain"
-  type        = string
-}

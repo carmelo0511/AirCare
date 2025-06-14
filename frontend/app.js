@@ -13,7 +13,7 @@ try {
   console.warn('config.js not found, using default API URL');
 }
 
-import { signIn, signOut, getCurrentUser } from './auth.js';
+// Authentication removed
 const apiBaseUrl = API_BASE_URL;
 
 // --- DOM elements ---
@@ -31,8 +31,6 @@ const emojiDisplay = document.getElementById('emoji');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
 const historyChartEl = document.getElementById('historyChart');
-const loginBtn = document.getElementById('loginBtn');
-const logoutBtn = document.getElementById('logoutBtn');
 // Removed language selector and theme toggle elements
 const offlineNotice = document.getElementById('offlineNotice');
 
@@ -70,20 +68,19 @@ function buildApiUrl(route, params = {}) {
   return url.toString();
 }
 
-async function fetchAirData(lat, lon, userId) {
+async function fetchAirData(lat, lon) {
   try {
-    const url = buildApiUrl('/air', { lat, lon, ...(userId ? { userId } : {}) });
+    const url = buildApiUrl('/air', { lat, lon });
     return await fetchJson(url);
   } catch (err) {
     throw new Error(`Failed to fetch air data: ${err.message}`);
   }
 }
 
-async function fetchHistoryData(lat, lon, userId) {
+async function fetchHistoryData(lat, lon) {
   try {
     const url = buildApiUrl('/history', {
-      location: `${lat},${lon}`,
-      ...(userId ? { userId } : {})
+      location: `${lat},${lon}`
     });
     return await fetchJson(url);
   } catch (err) {
@@ -200,29 +197,6 @@ function showHistory(show) {
 }
 
 
-// --- Cognito Authentication ---
-async function updateAuthUI() {
-  const user = await getCurrentUser();
-  if (user) {
-    loginBtn.classList.add('hidden');
-    logoutBtn.classList.remove('hidden');
-  } else {
-    loginBtn.classList.remove('hidden');
-    logoutBtn.classList.add('hidden');
-  }
-}
-
-if (loginBtn && logoutBtn) {
-  loginBtn.addEventListener('click', () => signIn());
-  logoutBtn.addEventListener('click', async () => {
-    await signOut();
-    updateAuthUI();
-  });
-  updateAuthUI();
-}
-
-
-
 // Dark mode functionality removed
 
 // --- Offline notice ---
@@ -305,8 +279,6 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
   showHistory(false);
   historyList.innerHTML = "";
 
-  const user = await getCurrentUser();
-  const userId = user ? user.username || user.sub : undefined;
 
   try {
     // 1. Get display name for the location
@@ -318,11 +290,11 @@ async function fetchAirAndHistory(lat, lon, locationLabel = null) {
     const roundedLat = roundCoord(lat);
     const roundedLon = roundCoord(lon);
 
-    const airData = await fetchAirData(roundedLat, roundedLon, userId);
+    const airData = await fetchAirData(roundedLat, roundedLon);
     if (!airData || airData.error) throw new Error(airData.error || "AQI data unavailable");
     renderAirInfo(cityLabel, airData.aqi);
 
-    const histData = await fetchHistoryData(roundedLat, roundedLon, userId);
+    const histData = await fetchHistoryData(roundedLat, roundedLon);
     renderHistory(histData.history);
   } catch (err) {
     showError("Error: " + err.message);

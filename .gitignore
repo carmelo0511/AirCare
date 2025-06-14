@@ -15,4 +15,3 @@ import_all.sh
 .terraform/
 frontend/package-lock.json
 frontend/config.js
-frontend/cognito-config.js
