@@ -237,8 +237,8 @@ terraform apply
 ```
 
 If you created core resources manually (for example to bootstrap the S3 backend),
-import them before applying. Replace the placeholders below with the values from
-`terraform.tfvars`:
+the deployment workflow will import them automatically before running `terraform apply`.
+You can also run the commands below once locally if you prefer:
 
 ```bash
 terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
