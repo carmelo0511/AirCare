@@ -32,9 +32,15 @@ function normalizeCoordinate(value) {
   return Number(parseFloat(value).toFixed(2));
 }
 
+// Retrieve the OpenWeatherMap API key from environment variables
+function getApiKey() {
+  return process.env.OPENWEATHER_APIKEY || process.env.API_KEY;
+}
+
 module.exports = {
   getAdvice,
   buildResponse,
   fetchJsonWithEnglish,
   normalizeCoordinate,
+  getApiKey,
 };

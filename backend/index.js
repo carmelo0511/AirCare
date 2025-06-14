@@ -21,7 +21,8 @@ const {
   getAdvice,
   buildResponse,
   fetchJsonWithEnglish,
-  normalizeCoordinate
+  normalizeCoordinate,
+  getApiKey
 } = require("./utils");
 
 // --- Endpoint handlers ---
@@ -159,8 +160,8 @@ async function handleHistory(params) {
 exports.handler = async (event) => {
   console.log("📥 Event raw:", JSON.stringify(event));
 
-  // Support both local (OPENWEATHER_APIKEY) and Terraform (API_KEY) env vars
-  const APIKEY = process.env.OPENWEATHER_APIKEY || process.env.API_KEY;
+  // Retrieve API key from environment variables
+  const APIKEY = getApiKey();
   if (!APIKEY) {
     return buildResponse(500, { error: "Missing OPENWEATHER_APIKEY/API_KEY" });
   }
