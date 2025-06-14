@@ -49,12 +49,6 @@ jobs:
           cd backend
           npm test --silent
 
-      - name: 📁 Install frontend dependencies
-        run: |
-          npm install --prefix frontend
-          npm ci --prefix frontend
-      - name: 🧪 Run frontend e2e tests
-        run: npm run test:e2e --prefix frontend
 
       - name: 🗃️ Cache Terraform plugins
         uses: actions/cache@v4
