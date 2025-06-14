@@ -14,7 +14,7 @@
 </head>
 <body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex flex-col items-center justify-center text-gray-800 font-sans transition-all duration-700 px-2">
   <!-- Main container for the app -->
-  <div class="w-full max-w-md md:max-w-lg p-6 bg-white shadow-2xl rounded-2xl relative mx-auto">
+  <div id="appContainer" class="w-full max-w-md md:max-w-lg p-6 bg-white shadow-2xl rounded-2xl relative mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-3xl font-bold flex items-center gap-2">
@@ -27,6 +27,7 @@
           <option value="en">EN</option>
           <option value="fr">FR</option>
         </select>
+        <button id="themeToggle" class="ml-2 border rounded p-1 text-sm">Dark</button>
       </div>
     </div>
 

@@ -25,6 +25,7 @@ const historyChartEl = document.getElementById('historyChart');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const langSelect = document.getElementById('langSelect');
+const themeToggle = document.getElementById('themeToggle');
 
 // Used for debouncing autocomplete requests
 let debounceTimeout = null;
@@ -216,6 +217,25 @@ if (langSelect) {
     setLanguage(langSelect.value);
   });
   setLanguage(getCurrentLanguage());
+}
+
+// --- Theme toggle ---
+function applyTheme() {
+  const dark = localStorage.getItem('darkMode') === '1';
+  document.body.classList.toggle('dark', dark);
+  if (themeToggle) {
+    themeToggle.textContent = dark ? 'Light' : 'Dark';
+  }
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    const dark = !document.body.classList.contains('dark');
+    document.body.classList.toggle('dark', dark);
+    localStorage.setItem('darkMode', dark ? '1' : '0');
+    themeToggle.textContent = dark ? 'Light' : 'Dark';
+  });
+  applyTheme();
 }
 
 // --- City Autocomplete Logic ---
