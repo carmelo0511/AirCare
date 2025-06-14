@@ -118,6 +118,7 @@ jobs:
           terraform import aws_iam_role.lambda_exec lambda_exec_role || true
           terraform import aws_dynamodb_table.history_table AirCareHistoryAQI || true
           terraform import aws_lambda_function.aircare_backend "${{ secrets.LAMBDA_FUNCTION_NAME }}" || true
+          terraform import aws_cloudfront_distribution.aircare_distribution "${{ secrets.CLOUDFRONT_DIST_ID }}" || true
 
       - name: 🚀 Terraform Apply
         working-directory: ./terraform
