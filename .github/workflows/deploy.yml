@@ -17,7 +17,7 @@ jobs:
       - name: 🔒 Verify required secrets
         run: |
           missing=false
-          for var in AWS_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY CLOUDFRONT_DIST_ID LAMBDA_FUNCTION_NAME OPENWEATHER_APIKEY; do
+          for var in AWS_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY CLOUDFRONT_DIST_ID OPENWEATHER_APIKEY; do
             if [ -z "${!var}" ]; then
               echo "::error::$var secret not set"
               missing=true
@@ -31,7 +31,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           CLOUDFRONT_DIST_ID: ${{ secrets.CLOUDFRONT_DIST_ID }}
-          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
           OPENWEATHER_APIKEY: ${{ secrets.OPENWEATHER_APIKEY }}
 
       - name: ☁️ Configure AWS credentials
@@ -122,16 +121,19 @@ jobs:
           echo "table=${table}" >> "$GITHUB_OUTPUT"
           role=$(aws iam get-role --role-name lambda_exec_role --query 'Role.Arn' --output text)
           echo "role=${role}" >> "$GITHUB_OUTPUT"
+          function_name=$(grep lambda_function_name terraform/terraform.tfvars | awk '{print $3}' | tr -d '"')
+          echo "function_name=${function_name}" >> "$GITHUB_OUTPUT"
 
       - name: 🚀 Deploy Lambda function
         run: |
-          if aws lambda get-function --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} >/dev/null 2>&1; then
+          fname="${{ steps.infra.outputs.function_name }}"
+          if aws lambda get-function --function-name "$fname" >/dev/null 2>&1; then
             aws lambda update-function-code \
-              --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+              --function-name "$fname" \
               --zip-file fileb://lambda.zip
           else
             aws lambda create-function \
-              --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+              --function-name "$fname" \
               --runtime nodejs18.x \
               --role ${{ steps.infra.outputs.role }} \
               --handler index.handler \
