@@ -159,9 +159,10 @@ async function handleHistory(params) {
 exports.handler = async (event) => {
   console.log("📥 Event raw:", JSON.stringify(event));
 
-  const APIKEY = process.env.OPENWEATHER_APIKEY;
+  // Support both local (OPENWEATHER_APIKEY) and Terraform (API_KEY) env vars
+  const APIKEY = process.env.OPENWEATHER_APIKEY || process.env.API_KEY;
   if (!APIKEY) {
-    return buildResponse(500, { error: "Missing OPENWEATHER_APIKEY" });
+    return buildResponse(500, { error: "Missing OPENWEATHER_APIKEY/API_KEY" });
   }
 
   const path = event.resource || event.requestContext?.http?.path || event.path;
