@@ -223,6 +223,10 @@ terraform state list
 
 Ensure a `lambda.zip` exists in the repository root before running Terraform commands.
 
+For the CI/CD pipeline to succeed, set an `OPENWEATHER_APIKEY` secret in your
+GitHub repository. This secret provides the API key required by Terraform and
+the Lambda function.
+
 
 ---
 
