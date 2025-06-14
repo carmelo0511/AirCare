@@ -243,6 +243,7 @@ If the backend Lambda already exists in your AWS account, import it into the Ter
 
 ```bash
 terraform import aws_lambda_function.aircare_backend <function_arn>
+terraform import aws_cloudfront_distribution.aircare_distribution <distribution_id>
 ```
 
 
@@ -252,7 +253,8 @@ GitHub repository. These are consumed by the deploy workflow:
 - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` – credentials for deploying
   infrastructure and uploading the Lambda archive.
 - `AWS_S3_BUCKET` – destination S3 bucket for the frontend.
-- `CLOUDFRONT_DIST_ID` – distribution to invalidate after an upload.
+- `CLOUDFRONT_DIST_ID` – ID of the CloudFront distribution to import and
+  invalidate after each upload.
 - `LAMBDA_FUNCTION_NAME` – name of the backend Lambda function.
 - `OPENWEATHER_APIKEY` – API key passed to Terraform and the Lambda runtime.
 
