@@ -1,6 +1,6 @@
 name: Deploy AirCare Infrastructure & App
 
-on:
+"on":
   push:
     branches:
       - main
