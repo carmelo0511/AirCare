@@ -112,13 +112,16 @@ jobs:
           TF_VAR_openweather_api_key: ${{ secrets.OPENWEATHER_APIKEY }}
         run: terraform apply -auto-approve
 
-      - name: 📤 Get Terraform outputs
-        id: tfout
-        working-directory: ./terraform
+      - name: 📤 Lookup infrastructure details
+        id: infra
         run: |
-          echo "api=$(terraform output -raw api_gateway_url)" >> $GITHUB_OUTPUT
-          echo "table=$(terraform output -raw dynamodb_table_name)" >> $GITHUB_OUTPUT
-          echo "role=$(terraform output -raw lambda_role_arn)" >> $GITHUB_OUTPUT
+          api_id=$(aws apigateway get-rest-apis --query "items[?name=='AirCare API'].id" --output text)
+          api="https://${api_id}.execute-api.ca-central-1.amazonaws.com/prod"
+          echo "api=${api}" >> "$GITHUB_OUTPUT"
+          table=$(grep dynamodb_table_name terraform/terraform.tfvars | awk '{print $3}')
+          echo "table=${table}" >> "$GITHUB_OUTPUT"
+          role=$(aws iam get-role --role-name lambda_exec_role --query 'Role.Arn' --output text)
+          echo "role=${role}" >> "$GITHUB_OUTPUT"
 
       - name: 🚀 Deploy Lambda function
         run: |
@@ -130,15 +133,15 @@ jobs:
             aws lambda create-function \
               --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
               --runtime nodejs18.x \
-              --role ${{ steps.tfout.outputs.role }} \
+              --role ${{ steps.infra.outputs.role }} \
               --handler index.handler \
               --zip-file fileb://lambda.zip \
-              --environment Variables=TABLE_NAME=${{ steps.tfout.outputs.table }},OPENWEATHER_APIKEY=${{ secrets.OPENWEATHER_APIKEY }}
+              --environment Variables=TABLE_NAME=${{ steps.infra.outputs.table }},OPENWEATHER_APIKEY=${{ secrets.OPENWEATHER_APIKEY }}
           fi
 
       - name: 🔧 Generate frontend config
         env:
-          API_BASE_URL: ${{ steps.tfout.outputs.api }}
+          API_BASE_URL: ${{ steps.infra.outputs.api }}
         run: node scripts/set-api-url.js
 
       - name: ☁️ Sync S3 bucket (frontend)
