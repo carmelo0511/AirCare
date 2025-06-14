@@ -12,6 +12,26 @@ resource "aws_s3_bucket" "frontend_bucket" {
   }
 }
 
+resource "aws_cloudfront_origin_access_identity" "oai" {
+  comment = "AirCare OAI"
+}
+
+resource "aws_s3_bucket_policy" "frontend_policy" {
+  bucket = aws_s3_bucket.frontend_bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+        },
+        Action = "s3:GetObject",
+        Resource = "${aws_s3_bucket.frontend_bucket.arn}/*"
+      }
+    ]
+  })
+}
 resource "aws_s3_bucket_website_configuration" "frontend_website" {
   bucket = aws_s3_bucket.frontend_bucket.id
 
@@ -35,6 +55,32 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+resource "aws_iam_role_policy" "lambda_logs" {
+  name   = "lambda-logs-policy"
+  role   = aws_iam_role.lambda_exec.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:Query"
+        ],
+        Resource = aws_dynamodb_table.history_table.arn
+      }
+    ]
+  })
+}
 resource "aws_lambda_function" "aircare_backend" {
   filename         = "../lambda.zip"
   function_name    = var.lambda_function_name
@@ -75,9 +121,14 @@ resource "aws_api_gateway_deployment" "aircare_deployment" {
 
   depends_on = [
     aws_api_gateway_integration.air_integration,
-    aws_api_gateway_method.air_method
+    aws_api_gateway_method.air_method,
+    aws_api_gateway_integration.geo_direct,
+    aws_api_gateway_method.geo_direct,
+    aws_api_gateway_integration.geo_reverse,
+    aws_api_gateway_method.geo_reverse,
+    aws_api_gateway_integration.history,
+    aws_api_gateway_method.history
   ]
-}
 
 resource "aws_api_gateway_stage" "prod" {
   stage_name    = var.stage_name
@@ -114,7 +165,7 @@ resource "aws_cloudfront_distribution" "aircare_distribution" {
     origin_id   = "s3-aircare"
 
     s3_origin_config {
-      origin_access_identity = ""
+      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
     }
   }
 
@@ -153,21 +204,11 @@ resource "aws_cloudfront_distribution" "aircare_distribution" {
     Project = "AirCare"
   }
 }
-
-resource "null_resource" "invalidate_cloudfront" {
-  triggers = {
-    distribution_id = aws_cloudfront_distribution.aircare_distribution.id
-    timestamp       = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-      aws cloudfront create-invalidation \
-        --distribution-id ${aws_cloudfront_distribution.aircare_distribution.id} \
-        --paths "/*"
-    EOT
-  }
+resource "aws_cloudfront_distribution" "invalidate" {
+  distribution_id = aws_cloudfront_distribution.aircare_distribution.id
+  paths           = ["/*"]
 }
+
 resource "aws_api_gateway_resource" "air_resource" {
   rest_api_id = aws_api_gateway_rest_api.aircare_api.id
   parent_id   = aws_api_gateway_rest_api.aircare_api.root_resource_id
@@ -177,6 +218,77 @@ resource "aws_api_gateway_resource" "air_resource" {
 resource "aws_api_gateway_method" "air_method" {
   rest_api_id   = aws_api_gateway_rest_api.aircare_api.id
   resource_id   = aws_api_gateway_resource.air_resource.id
-  http_method   = "POST"
+  http_method   = "GET"
   authorization = "NONE"
+}
+resource "aws_api_gateway_resource" "geo" {
+  rest_api_id = aws_api_gateway_rest_api.aircare_api.id
+  parent_id   = aws_api_gateway_rest_api.aircare_api.root_resource_id
+  path_part   = "geo"
+}
+
+resource "aws_api_gateway_resource" "geo_direct" {
+  rest_api_id = aws_api_gateway_rest_api.aircare_api.id
+  parent_id   = aws_api_gateway_resource.geo.id
+  path_part   = "direct"
+}
+
+resource "aws_api_gateway_method" "geo_direct" {
+  rest_api_id   = aws_api_gateway_rest_api.aircare_api.id
+  resource_id   = aws_api_gateway_resource.geo_direct.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "geo_direct" {
+  rest_api_id             = aws_api_gateway_rest_api.aircare_api.id
+  resource_id             = aws_api_gateway_resource.geo_direct.id
+  http_method             = aws_api_gateway_method.geo_direct.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+}
+
+resource "aws_api_gateway_resource" "geo_reverse" {
+  rest_api_id = aws_api_gateway_rest_api.aircare_api.id
+  parent_id   = aws_api_gateway_resource.geo.id
+  path_part   = "reverse"
+}
+
+resource "aws_api_gateway_method" "geo_reverse" {
+  rest_api_id   = aws_api_gateway_rest_api.aircare_api.id
+  resource_id   = aws_api_gateway_resource.geo_reverse.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "geo_reverse" {
+  rest_api_id             = aws_api_gateway_rest_api.aircare_api.id
+  resource_id             = aws_api_gateway_resource.geo_reverse.id
+  http_method             = aws_api_gateway_method.geo_reverse.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.aircare_backend.invoke_arn
+}
+
+resource "aws_api_gateway_resource" "history" {
+  rest_api_id = aws_api_gateway_rest_api.aircare_api.id
+  parent_id   = aws_api_gateway_rest_api.aircare_api.root_resource_id
+  path_part   = "history"
+}
+
+resource "aws_api_gateway_method" "history" {
+  rest_api_id   = aws_api_gateway_rest_api.aircare_api.id
+  resource_id   = aws_api_gateway_resource.history.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "history" {
+  rest_api_id             = aws_api_gateway_rest_api.aircare_api.id
+  resource_id             = aws_api_gateway_resource.history.id
+  http_method             = aws_api_gateway_method.history.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.aircare_backend.invoke_arn
 }
