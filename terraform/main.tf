@@ -131,7 +131,6 @@ resource "aws_api_gateway_deployment" "aircare_deployment" {
   ]
 }
 
-}
 
 resource "aws_api_gateway_stage" "prod" {
   stage_name    = var.stage_name
