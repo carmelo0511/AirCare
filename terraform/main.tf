@@ -82,13 +82,15 @@ resource "aws_iam_role_policy" "lambda_logs" {
   })
 }
 resource "aws_lambda_function" "aircare_backend" {
-  filename         = "../lambda.zip"
-  function_name    = var.lambda_function_name
-  role             = aws_iam_role.lambda_exec.arn
-  handler          = "index.handler"
-  runtime          = "nodejs18.x"
-  timeout          = 10
-  source_code_hash = filebase64sha256("../lambda.zip")
+  filename      = "../lambda.zip"
+  function_name = var.lambda_function_name
+  role          = aws_iam_role.lambda_exec.arn
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  timeout       = 10
+  # Lambda package may not exist when running validation in CI/local.
+  # Use try() so validation succeeds even if the zip file is absent.
+  source_code_hash = try(filebase64sha256("../lambda.zip"), "")
   environment {
     variables = {
       TABLE_NAME = var.dynamodb_table_name
